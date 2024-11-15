@@ -1,4 +1,3 @@
 # MemoryNCA
 Repo for Memory NCA paper, includes all experimental code \
-[Online Article](https://etimush.github.io/MemoryNCA/)\
-[Preprint](https://arxiv.org/) <-- change later !!!!\
+Online Article: <a href="https://etimush.github.io/MemoryNCA/" target="_blank">GitHub</a> <br>Preprint: <a href="https://arxiv.org/" target="_blank">PreprintName</a>
