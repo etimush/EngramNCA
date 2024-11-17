@@ -86,12 +86,13 @@ def gram_matrix(input):
     G = torch.mm(features, features.t())
     return G.div(a * b * c * d)
 
-def get_image(path,height=50, width=50):
+def get_image(path,height=50, width=50, padding =0):
     base = cv2.imread(path, cv2.IMREAD_UNCHANGED)
     base = cv2.resize(base, (int(height), int(width)), interpolation=cv2.INTER_AREA)
     base_2 = base / 255
     base_2[..., :3] *= base_2[..., 3:]
     base_torch = torch.tensor(base_2, dtype=torch.float32, requires_grad=True).permute((2, 0, 1)).cuda()
+    base_torch = torch.nn.functional.pad(base_torch, [padding,padding,padding,padding ])
     base_tt = base_torch.cpu().permute((1, 2, 0)).clone().detach().numpy()
     return base_torch,base_tt
 
@@ -108,3 +109,32 @@ def get_reference_image_and_seed(path, height = 50, width =50, channels =16):
 
 def to_vue_image(tensor):
     return tensor.cpu().permute((1, 2, 0)).clone().detach().numpy()
+
+def make_gene_pool(gene_location,pool_size = 1333, height = 50, width= 50, channels = 12, device = "cuda:0", gene_size = 3):
+    seed = torch.zeros((channels, height, width), device=device)
+    for gene_loc in gene_location:
+        seed[channels-1
+             -gene_loc, height // 2, width // 2] = 1
+    seed[3:-gene_size, height // 2, width // 2] = 1
+    pool = seed.tile(pool_size,1,1,1)
+    return pool
+
+def get_gene_pool(pools, partitions, seeds):
+    idxs = []
+    pool_tot = []
+    for part, pool, seed in zip(partitions, pools, seeds):
+        idx = np.random.choice(pool.shape[0], part, replace=False)
+        idxs.append(idx)
+        p = pool[idx]
+        p[0:1] = seed.clone()
+        pool_tot.append(p)
+    return idxs, torch.cat(pool_tot,dim=0)
+
+def udate_gene_pool(pools,results, idxs, partitions):
+    pool_new =[]
+    cum_idx = 0
+    for pool, idx, part in zip(pools, idxs, partitions):
+        pool[idx] = results[cum_idx:part+cum_idx]
+        cum_idx+=part
+        pool_new.append(pool)
+    return pool_new

@@ -108,3 +108,108 @@ class ReducedCA(torch.nn.Module):
         return x
 
 
+class GeneCA(torch.nn.Module):
+    def __init__(self, chn=12, hidden_n=96, gene_size=3):
+        super().__init__()
+        self.chn = chn
+        self.w1 = torch.nn.Conv2d(chn + 3 * (chn), hidden_n, 1)
+        self.w2 = torch.nn.Conv2d(hidden_n, chn - gene_size, 1, bias=False)
+        self.w2.weight.data.zero_()
+        self.gene_size = gene_size
+
+    def forward(self, x, update_rate=0.5):
+        gene = x[:, -self.gene_size:, ...]
+        y = reduced_perception(x, 0)
+        y = self.w2(torch.relu(self.w1(y)))
+        b, c, h, w = y.shape
+        update_mask = (torch.rand(b, 1, h, w, device="cuda:0") + update_rate).floor()
+        xmp = torch.nn.functional.pad(x[:, None, 3, ...], pad=[1, 1, 1, 1], mode="circular")
+        pre_life_mask = torch.nn.functional.max_pool2d(xmp, 3, 1, 0, ).cuda() > 0.1
+        x = x[:, :x.shape[1] - self.gene_size, ...] + y * update_mask * pre_life_mask
+        x = torch.cat((x, gene), dim=1)
+        return x
+
+
+class GenePropCA(torch.nn.Module):
+    def __init__(self, chn=12, hidden_n=96, gene_size=3):
+        super().__init__()
+        self.chn = chn
+        self.w1 = torch.nn.Conv2d(4*chn, hidden_n, 1)
+        self.w2 = torch.nn.Conv2d(hidden_n,  gene_size, 1, bias=False)
+        self.w2.weight.data.zero_()
+        self.gene_size = gene_size
+
+    def forward(self, x, update_rate=0.5):
+        gene = x[:, -self.gene_size:, ...]
+        y = reduced_perception(x, 0)
+        y = self.w2(torch.relu(self.w1(y)))
+        b, c, h, w = y.shape
+        update_mask = (torch.rand(b, 1, h, w, device="cuda:0") + update_rate).floor()
+        xmp = torch.nn.functional.pad(x[:, None, 3, ...], pad=[1, 1, 1, 1], mode="circular")
+        pre_life_mask = torch.nn.functional.max_pool2d(xmp, 3, 1, 0, ).cuda() > 0.1
+        gene = gene + y  * update_mask* pre_life_mask
+        x = x[:, :x.shape[1] - self.gene_size, ...]
+        x = torch.cat((x, gene), dim=1)
+        return x
+
+
+def gradnorm_perception(x):
+  grad = perchannel_conv(x, torch.stack([sobel_x, sobel_x.T]))
+  gx, gy = grad[:, ::2], grad[:, 1::2]
+  state_lap = perchannel_conv(x, torch.stack([ident, lap]))
+  return torch.cat([ state_lap, (gx*gx+gy*gy+1e-8).sqrt()], 1)
+
+
+class IsoCA(torch.nn.Module):
+  def __init__(self, chn=12, hidden_n=128,  gene_size=3):
+    super().__init__()
+    self.chn = chn
+
+    # Determine the number of perceived channels
+    perc_n = gradnorm_perception(torch.zeros([1, chn, 8, 8], device="cuda:0")).shape[1]
+
+    self.gene_size = gene_size
+    self.w1 = torch.nn.Conv2d(perc_n, hidden_n, 1)
+    self.w2 = torch.nn.Conv2d(hidden_n, chn- gene_size, 1, bias=False)
+    self.w2.weight.data.zero_()
+
+
+
+  def forward(self, x, update_rate=0.5):
+
+    gene = x[:, -self.gene_size:, ...]
+    y = gradnorm_perception(x)
+    y = self.w1(y)
+    y = self.w2(torch.nn.functional.leaky_relu(y))
+    b, c, h, w = y.shape
+    update_mask = (torch.rand(b, 1, h, w, device="cuda:0") + update_rate).floor()
+    pre_life_mask = torch.nn.functional.max_pool2d(x[:,None,3,...], 3, 1, 1).cuda() > 0.1
+    x = x[:, :x.shape[1] - self.gene_size, ...] + y * update_mask * pre_life_mask
+    x = torch.cat((x, gene), dim=1)
+
+    return x
+
+
+
+class IsoGenePropCA(torch.nn.Module):
+    def __init__(self, chn=12, hidden_n=96, gene_size=3):
+        super().__init__()
+        self.chn = chn
+        perc_n = gradnorm_perception(torch.zeros([1, chn, 8, 8], device="cuda:0")).shape[1]
+        self.w1 = torch.nn.Conv2d(perc_n, hidden_n, 1)
+        self.w2 = torch.nn.Conv2d(hidden_n,  gene_size, 1, bias=False)
+        self.w2.weight.data.zero_()
+        self.gene_size = gene_size
+
+    def forward(self, x, update_rate=0.5):
+        gene = x[:, -self.gene_size:, ...]
+        y = gradnorm_perception(x)
+        y = self.w2(torch.relu(self.w1(y)))
+        b, c, h, w = y.shape
+        update_mask = (torch.rand(b, 1, h, w, device="cuda:0") + update_rate).floor()
+        xmp = torch.nn.functional.pad(x[:, None, 3, ...], pad=[1, 1, 1, 1], mode="circular")
+        pre_life_mask = torch.nn.functional.max_pool2d(xmp, 3, 1, 0, ).cuda() > 0.1
+        gene = gene + y  * update_mask* pre_life_mask
+        x = x[:, :x.shape[1] - self.gene_size, ...]
+        x = torch.cat((x, gene), dim=1)
+        return x
