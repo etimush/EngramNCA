@@ -31,6 +31,7 @@
     overflow: visible;
   }
   d-contents{
+    display: none;
     height: 100%;
     position: sticky;
     top: 25%;
@@ -53,28 +54,11 @@
       text-align: center;
     }
      /* TOC */
-    @media (max-width: 1000px) {
-      d-contents {
-        justify-self: start;
-        align-self: start;
-        grid-column-start: 2;
-        grid-column-end: 6;
-        padding-bottom: 0.5em;
-        margin-bottom: 1em;
-        padding-left: 0.25em;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        border-bottom-width: 1px;
-        border-bottom-style: solid;
-        border-bottom-color: rgba(0, 0, 0, 0.1);
-        visibility: hidden;
 
-
-
-      }
-    }
 
     @media (min-width: 1000px) {
       d-contents {
+        display: block;
         align-self: start;
         grid-column-start: 1;
         grid-column-end: 4;
@@ -90,6 +74,7 @@
 
     @media (min-width: 1180px) {
       d-contents {
+        display: block;
         grid-column-start: 1;
         grid-column-end: 4;
         justify-self: end;
