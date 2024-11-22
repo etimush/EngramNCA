@@ -22,12 +22,26 @@
 </head>
 
 <style>
+  body{
+    height: 100%;
+    overflow: visible;
+  }
+  d-article{
+    height: 100%;
+    overflow: visible;
+  }
+  d-contents{
+    height: 100%;
+    position: sticky;
+    top: 25%;
+  }
   figure {
       text-align: center;
       margin-bottom: 0.5em;
       margin-top: 0.5em;
     }
     figure img {
+      text-align: center;
       max-width: 100%;
       width: unset;
     }
@@ -37,6 +51,111 @@
 
     figcaption {
       text-align: center;
+    }
+     /* TOC */
+    @media (max-width: 1000px) {
+      d-contents {
+        justify-self: start;
+        align-self: start;
+        grid-column-start: 2;
+        grid-column-end: 6;
+        padding-bottom: 0.5em;
+        margin-bottom: 1em;
+        padding-left: 0.25em;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        border-bottom-color: rgba(0, 0, 0, 0.1);
+
+
+
+      }
+    }
+
+    @media (min-width: 1000px) {
+      d-contents {
+        align-self: start;
+        grid-column-start: 1;
+        grid-column-end: 4;
+        justify-self: end;
+        padding-right: 3em;
+        padding-left: 2em;
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+        border-right-width: 1px;
+        border-right-style: solid;
+        border-right-color: rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    @media (min-width: 1180px) {
+      d-contents {
+        grid-column-start: 1;
+        grid-column-end: 4;
+        justify-self: end;
+        padding-right: 3em;
+        padding-left: 2em;
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+        border-right-width: 1px;
+        border-right-style: solid;
+        border-right-color: rgba(0, 0, 0, 0.1);
+      }
+
+      d-contents nav {
+      position: sticky;
+      top: 0; /* required */}
+
+    d-contents nav h3 {
+      margin-top: 0;
+      margin-bottom: 1em;
+
+    }
+
+    nav.sticky{
+    position: sticky;
+      top: 0;
+    }
+
+    d-contents nav a {
+      color: rgba(0, 0, 0, 0.8);
+      border-bottom: none;
+      text-decoration: none;
+    }
+
+    d-contents li {
+      list-style-type: none;
+    }
+
+    d-contents ul {
+      padding-left: 1em;
+    }
+
+    d-contents nav ul li {
+      margin-bottom: 0.25em;
+    }
+
+    d-contents nav a:hover {
+      text-decoration: underline solid rgba(0, 0, 0, 0.6);
+    }
+
+    d-contents nav ul {
+      margin-top: 0;
+      margin-bottom: 6px;
+    }
+
+    d-contents nav > div {
+      display: block;
+      outline: none;
+      margin-bottom: 0.5em;
+    }
+
+    d-contents nav > div > a {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    d-contents nav > div > a:hover,
+    d-contents nav > ul > li > a:hover {
+      text-decoration: none;
     }
 </style>
 
@@ -102,19 +221,54 @@
   </d-article>
 
 <d-article>
-    <a class="marker" href="#section-1" id="section-1"><span>1</span></a>
+
+
+    <a class="marker" href="#section-1" id="section-1"></a>
+
     <h2>Introduction</h2>
-    <p>For later</p>
+<d-contents class="sticky" >
+  <nav class="l-text toc figcaption sticky ">
+    <h3>Contents</h3>
+    <div ><a href="#section-1">Introduction</a></div>
+    <div><a href="#section-2">Model</a></div>
+    <ul>
+      <li><a href="#section-2.1">GeneCA</a></li>
+      <li><a href="#section-2.2">GenePropCA</a></li>
+      <li><a href="#section-2.3">Ensemble</a></li>
+    </ul>
+    <div><a href="#section-3">Hierarchical Growth Task</a></div>
+      <ul>
+          <li><a href="#section-3.1">Growing Coexisting Primitives</a></li>
+          <li><a href="#section-3.2">Growing Morphologies from Primitives</a></li>
+      </ul>
+    <div><a href="#section-4">Training Procedure</a></div>
+      <ul>
+          <li><a href="#section-4.1">eneCA Training</a></li>
+          <li><a href="#section-4.2">GenePropCA Training</a></li>
+      </ul>
+    <div><a href="#section-5">Results</a></div>
+      <ul>
+      <li><a href="#section-5.1">Growing Coexisting Primitives</a></li>
+      <li><a href="#section-5.2">Growing Morphologies from Primitives</a></li>
+      <li><a href="#section-5.3">Growing Coexisting Morphologies from Primitives</a></li>
+    </ul>
+    <div><a href="#section-6">Related Work</a></div>
+    <div><a href="#section-7">Discussion</a></div>
+    <div><a href="#section-8">Conclusion</a></div>
+  </nav>
+</d-contents>    <p>For later aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
     <p>Sample ref: <d-cite key="mercier2011humans"></d-cite></p>
     <h4>Sample math:</h4>
     <d-math block>
       c = \pm \sqrt{ \sum_{i=0}^{n}{a^{222} + b^2}}
     </d-math>
     <p>Sample footnote <d-footnote>Footnote</d-footnote> </p>
-    <a class="marker" href="#section-2" id="section-2"><span>2</span></a>
+    <a class="marker" href="#section-2" id="section-2"></a>
     <h2>Model(s)</h2>
     <p>Description of both models, including illustrations of their architecture and how they interact.</p>
-    <a class="marker" href="#section-2.1" id="section-2.1"><span>2.1</span></a>
+    <a class="marker" href="#section-2.1" id="section-2.1"></a>
     <h3>GeneCA</h3>
 
 
@@ -123,7 +277,7 @@
           style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure>
 
 
-    <a class="marker" href="#section-2.2" id="section-2.2"><span>2.2</span></a>
+    <a class="marker" href="#section-2.2" id="section-2.2"></a>
     <h3>GenePropCA</h3>
 
 
@@ -131,7 +285,7 @@
           style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure>
 
 
-    <a class="marker" href="#section-2.3" id="section-2.3"><span>2.3</span></a>
+    <a class="marker" href="#section-2.3" id="section-2.3"></a>
     <h3>Ensemble</h3>
 
 
@@ -139,33 +293,33 @@
       style="width:49%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure>
 
 
-    <a class="marker" href="#section-3" id="section-3"><span>3</span></a>
+    <a class="marker" href="#section-3" id="section-3"></a>
     <h2>Hierarchical Growth Task</h2>
     <p>A description of both growing task (primitives and morphologies). </p>
 
-    <a class="marker" href="#section-3.1" id="section-3.1"><span>3.1</span></a>
+    <a class="marker" href="#section-3.1" id="section-3.1"></a>
     <h3>Growing Coexisting Primitives</h3>
 
-    <a class="marker" href="#section-3.2" id="section-3.2"><span>3.2</span></a>
+    <a class="marker" href="#section-3.2" id="section-3.2"></a>
     <h3>Growing Morphologies from Primitives</h3>
 
-    <a class="marker" href="#section-4" id="section-4"><span>4</span></a>
+    <a class="marker" href="#section-4" id="section-4"></a>
     <h2>Training Procedure</h2>
     <p>A description of the training procedure. Talk about two training phases, the special pooling method to train multiple DNA at once
     and how the GeneNCa Weights are frozen when training the GeneProp NCA</p>
 
-    <a class="marker" href="#section-4.1" id="section-4.1"><span>4.1</span></a>
+    <a class="marker" href="#section-4.1" id="section-4.1"></a>
     <h3>GeneCA Training</h3>
 
-    <a class="marker" href="#section-4.2" id="section-4.2"><span>4.2</span></a>
+    <a class="marker" href="#section-4.2" id="section-4.2"></a>
     <h3>GenePropCA Training</h3>
 
-    <a class="marker" href="#section-5" id="section-5"><span>5</span></a>
+    <a class="marker" href="#section-5" id="section-5"></a>
     <h2>Results</h2>
     <p>Results split into sections based on relevance, will probably have a similar split aligning with the experiments conducted every week. The results Should not discuss the
     significance of the results, they should merely state what was observed. Include videos.</p>
 
-    <a class="marker" href="#section-5.1" id="section-5.1"><span>5.1</span></a>
+    <a class="marker" href="#section-5.1" id="section-5.1"></a>
     <h3>Growing Coexisting Primitives </h3>
 
     <p>
@@ -174,20 +328,20 @@
 
 
 
-    <a class="marker" href="#section-5.2" id="section-5.2"><span>5.2</span></a>
+    <a class="marker" href="#section-5.2" id="section-5.2"></a>
     <h3>Growing Morphologies from Primitives </h3>
 
-    <a class="marker" href="#section-5.3" id="section-5.3"><span>5.3</span></a>
+    <a class="marker" href="#section-5.3" id="section-5.3"></a>
     <h3>Growing Coexisting Morphologies from Primitives </h3>
 
-    <a class="marker" href="#section-6" id="section-6"><span>6</span></a>
+    <a class="marker" href="#section-6" id="section-6"></a>
     <h2>Related Work</h2>
 
-    <a class="marker" href="#section-7" id="section-7"><span>7</span></a>
+    <a class="marker" href="#section-7" id="section-7"></a>
     <h2>Discussion</h2>
     <p>A discussion of the results, their significance  and meaning.</p>
 
-    <a class="marker" href="#section-8" id="section-8"><span>8</span></a>
+    <a class="marker" href="#section-8" id="section-8"></a>
     <h2>Conclusion </h2>
     <p>Conclusion to wrap up the paper summarising what was done and how the results are significant</p>
 

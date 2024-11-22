@@ -11,18 +11,14 @@ if six.PY3:
 def write_file(fname, fout):
     for s in open(fname):
         if s.startswith('%% '):
+            print(s)
             fn = s.split()[1]
             write_file(fn, fout)
         else:
             fout.write(s)
 
 def build():
-    #os.system('''
-    #src="$(ls -t  ~/Downloads/export*.html | head -1)"
-    #if [ "$src" -nt article.html ]; then
-     #   cp -vf "$src" article.html
-    #fi
-    #''')
+
     with open('index.html', 'w') as fout:
       write_file('main.html', fout)
     print('build finished')
