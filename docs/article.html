@@ -57,7 +57,9 @@
 
     <a class="marker" href="#section-4.1" id="section-4.1"></a>
     <h3>GeneCA Training</h3>
-
+    <p>GeneCA training is similar to the pool-training procedure presented in <d-cite key="mordvintsev2020growing"></d-cite>. However, to enable the gene encoding of multiple primitives,
+    each gene-primitive pair is given its own pool to sample from and update. Additionally, the target image becomes a target batch consisting of n-repetitions of each image,
+    where n is a factor of the batch size. It is important to keep the batch size as a multiple of the number of primitives to avoid training bias towards one primitive.</p>
     <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/Training.drawio.svg"
       style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Training loop for multi-image batch training</figcaption>
 
