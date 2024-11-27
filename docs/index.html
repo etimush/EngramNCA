@@ -88,39 +88,40 @@
 
 
     <a class="marker" href="#section-1" id="section-1"></a>
-
     <h2>Introduction</h2>
-<d-contents class="sticky" >
-  <nav class="l-text toc figcaption ">
+
+<d-contents class="sticky">
+  <nav class="l-text toc figcaption">
     <h3>Contents</h3>
-    <div ><a href="#section-1">Introduction</a></div>
-    <div><a href="#section-2">Model</a></div>
-    <ul>
-      <li><a href="#section-2.1">GeneCA</a></li>
-      <li><a href="#section-2.2">GenePropCA</a></li>
-      <li><a href="#section-2.3">Ensemble</a></li>
-    </ul>
+    <div><a href="#section-1">Introduction</a></div>
+    <div><a href="#section-2">Model(s)</a></div>
+      <ul>
+    <div><a href="#section-2.1">GeneCA</a></div>
+    <div><a href="#section-2.2">GenePropCA</a></div>
+    <div><a href="#section-2.3">Ensemble</a></div>
+      </ul>
     <div><a href="#section-3">Hierarchical Growth Task</a></div>
       <ul>
-          <li><a href="#section-3.1">Growing Coexisting Primitives</a></li>
-          <li><a href="#section-3.2">Growing Morphologies from Primitives</a></li>
+    <div><a href="#section-3.1">Growing Coexisting Primitives</a></div>
+    <div><a href="#section-3.2">Growing Morphologies from Primitives</a></div>
       </ul>
     <div><a href="#section-4">Training Procedure</a></div>
       <ul>
-          <li><a href="#section-4.1">GeneCA Training</a></li>
-          <li><a href="#section-4.2">GenePropCA Training</a></li>
+    <div><a href="#section-4.1">GeneCA Training</a></div>
+    <div><a href="#section-4.2">GenePropCA Training</a></div>
       </ul>
     <div><a href="#section-5">Results</a></div>
       <ul>
-      <li><a href="#section-5.1">Growing Coexisting Primitives</a></li>
-      <li><a href="#section-5.2">Growing Morphologies from Primitives</a></li>
-      <li><a href="#section-5.3">Growing Coexisting Morphologies from Primitives</a></li>
-    </ul>
+    <div><a href="#section-5.1">Growing Coexisting Primitives</a></div>
+    <div><a href="#section-5.2">Growing Morphologies from Primitives</a></div>
+    <div><a href="#section-5.3">Growing Coexisting Morphologies from Primitives</a></div>
+      </ul>
     <div><a href="#section-6">Related Work</a></div>
     <div><a href="#section-7">Discussion</a></div>
     <div><a href="#section-8">Conclusion</a></div>
   </nav>
 </d-contents>
+
     <p>Sample ref: <d-cite key="mercier2011humans"></d-cite></p>
     <h4>Sample math:</h4>
     <d-math block>
@@ -130,6 +131,18 @@
     <a class="marker" href="#section-2" id="section-2"></a>
     <h2>Model(s)</h2>
     <p>Description of both models, including illustrations of their architecture and how they interact.</p>
+
+    <p>Taking inspiration from RNA memory transfer in planarians and Aplysia californica, we augment the NCA hidden state with a "private tape".
+    Instead of extending the classic NCA model by appending the tape to the hidden states, we choose to sacrifice hidden states by privatizing them, this ensures that any
+    improvements seen are not due to an increase in model size. The theory here is that the private tape augmentation can be exploited to encode different modalities of behaviour,
+    such as growing different shapes or representing different calculations.</p>
+
+    <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/gene.drawio.svg"; id="figure-augment"
+          style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>NCA augmentation through gene embedding channels.</figcaption>
+
+    <p>We chose to encode different "primitives" in the tape through binary representation</p>
+    <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/embedding.drawio.svg"; id="figure-embed"
+          style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption> Binary embedding of different primitives.</figcaption>
     <a class="marker" href="#section-2.1" id="section-2.1"></a>
     <h3>GeneCA</h3>
 
@@ -142,14 +155,19 @@
     <a class="marker" href="#section-2.2" id="section-2.2"></a>
     <h3>GenePropCA</h3>
 
+    <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/GeneProp1.drawio.svg"
+      style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>One step of the GenePropCA</figcaption>
 
-      <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/GeneProp1.drawio.svg"
-          style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>One step of the GenePropCA</figcaption>
+
 
 
     <a class="marker" href="#section-2.3" id="section-2.3"></a>
     <h3>Ensemble</h3>
 
+    <p>The ensemble model uses the GeneCA and GenePropCA to produce the final morphology. The GeneCA works without the GenePropCA and will produce the primitives. The
+    GenePropCA is dependent on the GeneCA as its parameters are trained to manipulate the GeneCA dynamics. At step N, the state of the CA is passed to the GeneCA, where it only modifies the visible and hidden channels
+    to produce an intermediate state, the intermediate step is then passed to the GenePropCA, where only the gene encoding channels are modified to produce step N+1. The idea here is for the
+    GenePropCA to learn to exploit the gene embedded dynamics of the GeneCA to produce more complex morphologies than that found in the GeneCA.</p>
 
     <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/Enseble.drawio.svg"
       style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>One step of the ensemble, GeneCA + GenePropCA</figcaption>
@@ -173,14 +191,15 @@
     <a class="marker" href="#section-4.1" id="section-4.1"></a>
     <h3>GeneCA Training</h3>
     <p>GeneCA training is similar to the pool-training procedure presented in <d-cite key="mordvintsev2020growing"></d-cite>. However, to enable the gene encoding of multiple primitives,
-    each gene-primitive pair are given their own pool to sample from and update to. Additionally, the target image becomes a target batch consisting of n-repetitions of each image,
+    each gene-primitive pair is given its own pool to sample from and update. Additionally, the target image becomes a target batch consisting of n-repetitions of each image,
     where n is a factor of the batch size. It is important to keep the batch size as a multiple of the number of primitives to avoid training bias towards one primitive.</p>
     <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/Training.drawio.svg"
       style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Training loop for multi-image batch training</figcaption>
 
     <a class="marker" href="#section-4.2" id="section-4.2"></a>
     <h3>GenePropCA Training</h3>
-
+     <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/training_prop.drawio.svg"
+      style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Training loop for GenePropCA</figcaption>
     <a class="marker" href="#section-5" id="section-5"></a>
     <h2>Results</h2>
     <p>Results split into sections based on relevance, will probably have a similar split aligning with the experiments conducted every week. The results Should not discuss the
