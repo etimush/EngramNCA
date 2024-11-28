@@ -24,9 +24,16 @@
     <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/gene.drawio.svg"; id="figure-augment"
           style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>NCA augmentation through gene embedding channels.</figcaption>
 
-    <p>We chose to encode different "primitives" in the tape through binary representation</p>
+    <p>We chose to encode different "primitives" in the tape through binary representation. These primitives can consist of simple shapes such as convex polygons or
+    more complex, convex, compound shapes such as body segments of a lizard emoji.</p>
     <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/embedding.drawio.svg"; id="figure-embed"
           style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption> Binary embedding of different primitives.</figcaption>
+
+    <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/LizEmbeddings.drawio.svg"; id="figure-embedliz"
+          style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption> Binary embedding of different primitives.</figcaption>
+
+
+
     <a class="marker" href="#section-2.1" id="section-2.1"></a>
     <h3>GeneCA</h3>
 
@@ -47,6 +54,8 @@
 
     <a class="marker" href="#section-2.3" id="section-2.3"></a>
     <h3>Ensemble</h3>
+
+    
 
     <p>The ensemble model uses the GeneCA and GenePropCA to produce the final morphology. The GeneCA works without the GenePropCA and will produce the primitives. The
     GenePropCA is dependent on the GeneCA as its parameters are trained to manipulate the GeneCA dynamics. At step N, the state of the CA is passed to the GeneCA, where it only modifies the visible and hidden channels
