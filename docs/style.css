@@ -39,6 +39,16 @@
     figcaption:before {
     content: 'Fig. ' counter(figures) ' - ';
   }
+    /* Style for figure links */
+    figure-link {
+        color: blue;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    figure-link:hover {
+      text-decoration: none;
+    }
      /* TOC */
 
 

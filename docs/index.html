@@ -15,15 +15,17 @@
 -->
 
 <!DOCTYPE html>
-<!--[if IE lte 8]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+###<!--[if IE lte 8]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js" defer></script><![endif]-->
 <head>
   <script src="./template.v2.js"></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel = "stylesheet" href="style.css">
   <meta charset="utf8">
 </head>
 
 <body>
+
   <d-front-matter>
     <script id='distill-front-matter' type="text/json">{
     "title": "MemoryNCA --> Need better title",
@@ -100,7 +102,7 @@
     <div><a href="#section-2.2">GenePropCA</a></div>
     <div><a href="#section-2.3">Ensemble</a></div>
       </ul>
-    <div><a href="#section-3">Hierarchical Growth Task</a></div>
+    <div><a href="#section-3">Hierarchical Growth Task --> I think this section should go before models</a></div>
       <ul>
     <div><a href="#section-3.1">Growing Coexisting Primitives</a></div>
     <div><a href="#section-3.2">Growing Morphologies from Primitives</a></div>
@@ -145,7 +147,12 @@
     <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/embedding.drawio.svg"; id="figure-embed"
           style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption> Binary embedding of different primitives.</figcaption>
 
-    <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/LizEmbeddings.drawio.svg"; id="figure-embedliz"
+    <p>The tape length has to be chosen such that 2^gene_channels is greater or equal to the number of primitives. This ensures that there are enough
+    distinct binary encoding for each primitive. However, due to reasons that will be discussed later, it is often preferable to have a buffer of genes that are not used
+    in the binary encoding. There is a delicate balance between the number of gene bits and shared hidden channels that needs to be reached as privatisation of channels
+    ensures a performance penalty (see Appendix 1.). </p>
+
+    <figure style="text-align: center; margin: 2rem 0;" id="figure-embedliz"><img playsinline src="figures/LizEmbeddings.drawio.svg";
           style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption> Binary embedding of different primitives.</figcaption>
 
 
@@ -154,15 +161,27 @@
     <h3>GeneCA</h3>
 
 
+    <p>The first model (<a href="#figure-div" class="figure-link" data-target="figure-div"></a>), which we choose to name GeneCA, is tasked with learning the primitive embedding. It takes
+    inspiration form the original NCA <d-cite key="mordvintsev2020growing"></d-cite> and is extended to also include a laplacian convolution filter as found in <d-cite key="placeholder"></d-cite>. Notably,
+        the parameters only produce a partial cell-state update-vector that comprises all non-gene channels. The gene channels are cloned and appended to the update vector after the stochastic
+    update step to prevent degradation over time. This leads to no change or propagation of gene channel information throughout the NCA cell.</p>
 
-      <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/Gene.drawio.svg"; id="figure-div"
-          style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>One step of the GeneCA</figcaption>
+      <figure style="text-align: center; margin: 2rem 0;" id="figure-div">
+    <img playsinline src="figures/Gene.drawio.svg" style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" />
+    <figcaption>One step of the GeneCA</figcaption>
+    </figure>
 
-
+    <
     <a class="marker" href="#section-2.2" id="section-2.2"></a>
     <h3>GenePropCA</h3>
 
-    <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/GeneProp1.drawio.svg"
+    <p>The GenePropCA model (<a href="#GeneProp" class="figure-link" data-target="GeneProp"></a>) is tasked with exploiting the gene embedding learned by the GeneCA.
+    By conditioning the primitive growth in the GeneCA to specific embedding, these embeddings now carry latent information about the primitives. We assume that the latent information
+    in each embedding can be modified to produce out-of-training behaviour, thus allowing the GenePropCA to both propagate and modify the genes to achieve a desired goal.
+    The architecture of the GenePropCA is similar to that of the GeneCA, where the neural network parameters produce a partial cell state update. In this case, only the genes are updated. Like in
+    the GeneCA, the un-updated cell states are cloned and appended after the asynchronous partial update, leading to the GenePropCA having no influence over non=gene channels. </p>
+
+    <figure style="text-align: center; margin: 2rem 0;" id="GeneProp"><img playsinline src="figures/GeneProp1.drawio.svg"
       style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>One step of the GenePropCA</figcaption>
 
 
@@ -183,11 +202,19 @@
 
 
     <a class="marker" href="#section-3" id="section-3"></a>
-    <h2>Hierarchical Growth Task</h2>
-    <p>A description of both growing task (primitives and morphologies). </p>
+    <h2>Hierarchical Growth Task --> I think this section should go before models</h2>
+
+    <p>The traditional NCAs presented in <d-cite key="mordvintsev2020growing">"</d-cite> and extended upon in <d-cite key="placeholder, placeholder"></d-cite> use the neural-network
+    parameters to encode the desired behaviour. In effect, the neural-network can be seen as the genome for the morphology, where for each distinct morphology a new NCA needs to be trained.
+    Intern, this makes it particularly difficult to have coexisting morphologies, or even just coexisting dynamics, running on the same lattice, as the multiple NCAs end up interfering with each-other.</p>
+
+    <p>Our model presents a possible solution to this problem ... <-- finish this paragraph</p>
 
     <a class="marker" href="#section-3.1" id="section-3.1"></a>
     <h3>Growing Coexisting Primitives</h3>
+
+    <p>The first step in the hierarchical growth task is to grow coexisting morphologies. In effect, this means to grow multiple distinct morphologies using the same set of NCA parameters. Much like te original growth task, the
+    multiple morphologies should be bounded and stable across time, with their shape unchanging once fully generated. </p>
 
     <a class="marker" href="#section-3.2" id="section-3.2"></a>
     <h3>Growing Morphologies from Primitives</h3>
@@ -207,6 +234,10 @@
 
     <a class="marker" href="#section-4.2" id="section-4.2"></a>
     <h3>GenePropCA Training</h3>
+    <p>GenePropCA training uses the same batch training technique as the GeneCA, we usually only train a single morphology, however multiple morphologies can be trained by
+    sacrificing more channels to act as "meta genes". These meta genes are unaffected by both the GeneCA and GenePropCA. During the training of the GenePropCA the GeneCA weights are frozen,
+    though their gradient contribution during the growth process is still used when backpropagating the loss to the GenePropCA. This ensures the GenePropCA's dynamics are
+    conditioned on those of the GeneCA.</p>
      <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/training_prop.drawio.svg"
       style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Training loop for GenePropCA</figcaption>
     <a class="marker" href="#section-5" id="section-5"></a>
@@ -258,5 +289,5 @@
     <d-bibliography src="bibliography.bib"></d-bibliography>
   </d-appendix>
 
-
+<script src="./figs.js"></script>
 </body>

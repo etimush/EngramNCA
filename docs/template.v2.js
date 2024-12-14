@@ -3483,6 +3483,7 @@ d-citation-list .references .title {
 
   	document.addEventListener('DOMContentLoaded', function () {
   		// execute inside handler, for dropping Event as argument
+
   		self.Prism.fileHighlight();
   	});
 
@@ -9163,6 +9164,7 @@ distill-header .nav a {
 
   }
 
+
   // Copyright 2018 The Distill Template Authors
 
   let templateIsLoading = false;
@@ -9250,4 +9252,6 @@ distill-header .nav a {
   }
 
 })));
+
+
 //# sourceMappingURL=template.v2.js.map
