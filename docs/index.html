@@ -117,6 +117,7 @@
     <div><a href="#section-5.1">Growing Coexisting Primitives</a></div>
     <div><a href="#section-5.2">Growing Morphologies from Primitives</a></div>
     <div><a href="#section-5.3">Growing Coexisting Morphologies from Primitives</a></div>
+    <div><a href="#section-5.4">Moving Primitives</a></div>
       </ul>
     <div><a href="#section-6">Related Work</a></div>
     <div><a href="#section-7">Discussion</a></div>
@@ -266,6 +267,27 @@
 
     <a class="marker" href="#section-5.3" id="section-5.3"></a>
     <h3>Growing Coexisting Morphologies from Primitives </h3>
+
+    <a class="marker" href="#section-5.4" id="section-5.4"></a>
+    <h3>Moving Primitives </h3>
+
+    <p>In contrast to the relatively simple task of growing morphologies, we wanted to test if the GenePropCA could exploit the embedding and learn the dynamics of
+    a complex system. For this we chose to replicate the dynamics of a Lenia glider. Lenia itself is a form of continuous CA that can exhibit remarkable complexity.
+    We chose a glider (<a href="#originalLenia" class="figure-link" data-target="originalLenia"></a>)  whose dynamics where no trivial, where learning to replicate it
+    would take more than simply memorising a simple pattern of motion. The GeneCA was trained on the first frame of the Lenia video. The GenePropCA was trained on a
+    quasi curriculum style learning, where at certain checkpoints additional frames of the video are inserted into the training set. It is always trained from the first frame
+    t0 the last frame of the training set in order, and loss was accumulated across all frames before backpropagation. The frame-by-frame loss accumulation is important here
+    since, unlike growing morphologies, the time evolution of the NCA from state to state is important. As a comparison a standard NCA was trained using the same method, the parameter count
+    of the standard NCA was selected such that it equaled the sum of total parameters between the GeneCA and the GenePropCA.</p>
+
+    <figure style="text-align: center; margin: 2rem 0;" id="originalLenia"><img playsinline src="figures/original_lenia.gif"
+      style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Original Lenia video.</figcaption>
+
+    <figure style="text-align: center; margin: 2rem 0;" id="standardNCA"><img playsinline src="figures/standard_nca.gif"
+      style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Standard NCA trained to replicate the video.</figcaption>
+
+    <figure style="text-align: center; margin: 2rem 0;" id="movingGene"><img playsinline src="figures/Gene_ca_moving.gif"
+      style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Our method trained to replicate the video.</figcaption>
 
     <a class="marker" href="#section-6" id="section-6"></a>
     <h2>Related Work</h2>
