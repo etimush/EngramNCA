@@ -124,27 +124,63 @@
       style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Training loop for GenePropCA</figcaption>
     <a class="marker" href="#section-5" id="section-5"></a>
     <h2>Results</h2>
-    <p>Results split into sections based on relevance, will probably have a similar split aligning with the experiments conducted every week. The results Should not discuss the
-    significance of the results, they should merely state what was observed. Include videos.</p>
+    <p>The model was tested with different primitives, target images and configuration. Below are the results of those experiments. Generally, the NCA has a size of 30 x 30, there are 16 channels in total of which the first four are the alpha value and the three color channels. Of the remaining 12 hidden channels, eight channels were privatized, i.e. could be read but not be altered by the GeneCA. </p>
 
     <a class="marker" href="#section-5.1" id="section-5.1"></a>
     <h3>Growing Coexisting Primitives </h3>
 
-    <figure style="text-align: center; margin: 2rem 0;"><video loop autoplay playsinline muted width="640px"; src="figures/Primitives.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing simple primitives.</figcaption>
-    <figure style="text-align: center; margin: 2rem 0;"><video loop autoplay playsinline muted width="640px"; src="figures/Individuals.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Untrained behaviour: primitives displaying strong individuality.</figcaption>
-    <figure style="text-align: center; margin: 2rem 0;"><video loop autoplay playsinline muted width="640px"; src="figures/Mixed.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Untrained behaviour: out-of-training generative capabilities from mixing genes.</figcaption>
-    <figure style="text-align: center; margin: 2rem 0;"><video loop autoplay playsinline muted width="640px"; src="figures/body_parts.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Lizard body parts primitives.</figcaption>
-     <figure style="text-align: center; margin: 2rem 0;"><video loop autoplay playsinline muted width="640px"; src="figures/horiz_vert.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Horizontal and vertical line primitives.</figcaption>
+    <p>Three primitives were chosen as target shapes: A blue square, a green circle and a red triangle. Those primitives have a corresponding one-hot encoding in the private tape. The geneCA was trained to update the public channels of the CA such that the right primitive is formed around a cell with the corresponding encoding. It is important to note that there is no gene propagation at this point, only the update of the public channels that the geneCA calculates based on the available private and public channels. </p>
+    <p>During test time, cells of the CA are picked as seed cells, and their private tape is altered. </p>
+
+    <p><a href="#growing-prims" class="figure-link" data-target="growing-prims"></a> shows how the binary encoding of the three primitives is assigned to three different cells in the CA, with the distance between them being great enough to avoid interactions between cells belonging to different primitives. Starting from the seed cell, the shapes and their color form over a number of update steps. Afterwards, they remain stable. </p>
+    <figure style="text-align: center; margin: 2rem 0;" id="growing-prims"><video loop autoplay playsinline muted width="640px"; src="figures/Primitives.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing simple primitives.</figcaption>
+    <p> <a href="#individuality-demo" class="figure-link" data-target="individuality-demo"></a> shows what happens if seed cells are placed in such proximity to each other that the resulting primitives would normally overlap.
+        As can be seen, the shapes remain largely distinct. Especially shapes of the same kind have neither overlap nor mixing and instead a border
+        can be visually seen. Circles placed in proximity to each other can for example be seen to form a comb-like structure (top of <a href="#individuality-demo" class="figure-link" data-target="individuality-demo"></a>).
+        If shapes of different kinds meet, the distinction is not always as clear and some interactions between different primitives can lead to a
+        mixing of colors, as can be seen in the bottom of <a href="#individuality-demo" class="figure-link" data-target="individuality-demo"></a>. Still, a distinction can be made and no primitive takes over another primitive.
+        This happens without such cases occurring during training. </p>
+    <figure style="text-align: center; margin: 2rem 0;" id="individuality-demo"><video loop autoplay playsinline muted width="640px"; src="figures/Individuals.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Untrained behaviour: primitives displaying strong individuality.</figcaption>
+
+    <p>Only the three one-hot encodings were used during training, but it is possible to deviate from this during test time and to use different binary arrays as the private encodings of the seed cell.
+        This essentially means that there is a mixture of genes. As can be seen in <a href="#primitive-mixing" class="figure-link" data-target="primitive-mixing"></a>, this leads to the growth of corresponding mixed forms. It can be seen that the shape of those forms is a
+        distorted overlap of the primitives while the color ranges from the pure color of the primitives to the mix of the two colors. The primitives dominate the developing form in those areas where
+        the other primitive is not growing, hence the combination of circle and square leads to most mixing. After a developmental period, the forms remain stable. This stability remains for any form of
+        encoding mixing and seems to be bound bythe maximum size of the primitives. </p>
+
+    <figure style="text-align: center; margin: 2rem 0;" id="primitive-mixing"><video loop autoplay playsinline muted width="640px"; src="figures/Mixed.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Untrained behaviour: out-of-training generative capabilities from mixing genes.</figcaption>
+    <p>The experiments were repeated with body parts of the lizard image as primitives as can be seen in <a href="#body-part-prims" class="figure-link" data-target="body-part-prims"></a>. As those were more than three parts, the encoding is not one-hot anymore. As before, placing a seed cell with the corresponding encoding
+        leads to the growth and stable persistence of primitives, even though those have more complex shapes and colorings. </p>
+
+    <figure style="text-align: center; margin: 2rem 0;" id="body-part-prims"><video loop autoplay playsinline muted width="640px"; src="figures/body_parts.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Lizard body parts primitives.</figcaption>
+    <p>Lastly, very simple unicolor vertical and horizontal lines were used as primitive as is depicted in <a href="#line-prims" class="figure-link" data-target="line-prims"></a>. This is the setup for later experiments. </p>
+
+     <figure style="text-align: center; margin: 2rem 0;" id="line-prims"><video loop autoplay playsinline muted width="640px"; src="figures/horiz_vert.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Horizontal and vertical line primitives.</figcaption>
 
 
 
 
     <a class="marker" href="#section-5.2" id="section-5.2"></a>
     <h3>Growing Morphologies from Primitives </h3>
-    <figure style="text-align: center; margin: 2rem 0;"><video loop autoplay playsinline muted width="640px"; src="figures/Growing_from_torso.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing the lizard morphology from the torso.</figcaption>
-    <figure style="text-align: center; margin: 2rem 0;"><video loop autoplay playsinline muted width="640px"; src="figures/GrowingLizardFast.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing the lizard from basic morphologies.</figcaption>
-    <figure style="text-align: center; margin: 2rem 0;"><video loop autoplay playsinline muted width="640px"; src="figures/GrowingMorpho_multi.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>The lizard will not grow form other primitives.</figcaption>
-    <figure style="text-align: center; margin: 2rem 0;"><video loop autoplay playsinline muted width="640px"; src="figures/fract.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing a fractal</figcaption>
+
+    <p>In the next step, the genepropCA was included. The attempt was to grow whole morphologies, while the geneCA weights where frozen on growing primitives.</p>
+    <p>In the lizard example, the genepropCA was trained as described above with the initial state being the seed for the torso primitive and the geneCA being trained
+        on parts of the whole lizard. As can be seen in <a href="#liz-from-parts" class="figure-link" data-target="liz-from-parts"></a>, the torso of the lizard is grown first, but the CA then continues to grow the limbs, tail and head. Deactivating
+        the genepropCA after the lizard is finished growing does not lead to a collapse, rather the lizard maintains its shape under the control of the geneCA. </p>
+    <figure style="text-align: center; margin: 2rem 0;" id="liz-from-parts"><video loop autoplay playsinline muted width="640px"; src="figures/Growing_from_torso.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing the lizard morphology from the torso.</figcaption>
+
+    <p>The experiment was repeated, this time choosing the circle, square and triangle as primitives and the blue circle as the seed cell during the genepropCA training. This was successful, as can be seen
+        in <a href="#liz-from-shapes" class="figure-link" data-target="liz-from-shapes"></a>. Even if the geneCA is not trained on all primitives occurring in the final lizard or even on primitives not derived from the target image at all, the genepropCA
+        is able to generalize and facilitate gene propagation that leads to the growth of the lizard, albeit with less quality as in the case described above for <a href="#liz-from-parts" class="figure-link" data-target="liz-from-parts"></a>. <a href="#liz-diff-start" class="figure-link" data-target="liz-diff-start"></a>
+        shows that the choice of the seed cell does indeed matter, as the lizard will only grow successfully if the exact same seed as in the training of the genepropCA is used.  </p>
+    <p>Further experiments showed that different seeds, which were not used as primitives during the training of the geneCA, can be used to train the genepropCA to grow a lizard.  </p>
+    <figure style="text-align: center; margin: 2rem 0;" id="liz-from-shapes"><video loop autoplay playsinline muted width="640px"; src="figures/GrowingLizardFast.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing the lizard from basic morphologies.</figcaption>
+    <figure style="text-align: center; margin: 2rem 0;" id="liz-diff-start"><video loop autoplay playsinline muted width="640px"; src="figures/GrowingMorpho_multi.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>The lizard will not grow form other primitives.</figcaption>
+
+    <p><a href="#grow-frac" class="figure-link" data-target="grow-frac"></a> depicts an experiment in which the simple primitives of unicolor vertical and horizontal lines are combined into a fractal with satisfying performance. This shows that the model can combine simple and few primitives into more complex
+        form consisting of many primitives in addition to combining complex and many primitives into less complex forms consisting of few primitives, as was done before with the lizard. </p>
+
+    <figure style="text-align: center; margin: 2rem 0;" id="grow-frac"><video loop autoplay playsinline muted width="640px"; src="figures/fract.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing a fractal</figcaption>
 
     <a class="marker" href="#section-5.3" id="section-5.3"></a>
     <h3>Growing Coexisting Morphologies from Primitives </h3>
