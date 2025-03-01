@@ -101,6 +101,8 @@
     target.authors = source.authors.map( (authorObject) => new Author(authorObject));
     target.katex = source.katex;
     target.password = source.password;
+    target._url = source._url
+    target.journal = source.journal
     if (source.doi) {
       target.doi = source.doi;
     }
@@ -111,7 +113,7 @@
       this.title = 'unnamed article'; // 'Attention and Augmented Recurrent Neural Networks'
       this.description = ''; // 'A visual overview of neural attention...'
       this.authors = []; // Array of Author(s)
-
+      this._url = "";
       this.bibliography = new Map();
       this.bibliographyParsed = false;
       //  {
@@ -1983,9 +1985,9 @@ d-appendix > distill-appendix {
     return `@article{${frontMatter.slug},
   author = {${frontMatter.bibtexAuthors}},
   title = {${frontMatter.title}},
-  journal = {${frontMatter.journal.title}},
+  journal = {${frontMatter.journal}},
   year = {${frontMatter.publishedYear}},
-  note = {${frontMatter.url}},
+  url = {${frontMatter._url}},
   doi = {${frontMatter.doi}}
 }`;
   }
@@ -9064,7 +9066,7 @@ distill-header .nav a {
       html += `
     <h3 id="citation">Citation</h3>
     <p>For attribution in academic contexts, please cite this work as</p>
-    <pre class="citation short">${frontMatter.concatenatedAuthors}, "${frontMatter.title}", Distill, ${frontMatter.publishedYear}.</pre>
+    <pre class="citation short">${frontMatter.concatenatedAuthors}, "${frontMatter.title}", *Will Be Updated, ${frontMatter.publishedYear}.</pre>
     <p>BibTeX citation</p>
     <pre class="citation long">${serializeFrontmatterToBibtex(frontMatter)}</pre>
     `;

@@ -3,15 +3,57 @@
 
     <a class="marker" href="#section-1" id="section-1"></a>
     <h2>Introduction</h2>
-
 %% contents.html
+    <p>The currently most accepted theory of memory in biological and artificial brains is the synapses dogma, that is,
+        the place where information is stored is at synapses.  Therefore, it is believed that the storage of memories
+        happens through changes in synaptic strengths. This view is challenged by emerging evidence that memory is also
+        present privately within cells, and synapses are merely a visible reverberation of such private memories.
+        Compelling examples are the evidence of memory transfer via injection of RNA extracted from trained Aplysia into
+        untrained animals, the memory transfer via a soup of trained planaria fed to untrained organisms, and the decapitation
+        of planaria that retained long-term memories after head regeneration. </p>
 
-    <p>Sample ref: <d-cite key="mercier2011humans"></d-cite></p>
-    <h4>Sample math:</h4>
-    <d-math block>
-      c = \pm \sqrt{ \sum_{i=0}^{n}{a^{222} + b^2}}
-    </d-math>
-    <p>Sample footnote <d-footnote>Footnote</d-footnote> </p>
+    <ul>In this work, we propose a Neural Cellular Automaton (NCA) model that allows for private memory storage within cells and molecular transfer across cells. We extend the NCA in two ways:
+<li>Each cell has a publicly visible state (comprised by a certain number of public CA channels) that can be accessed by neighboring cells and used as available information for computing cell state updates. This is akin to information transmitted through synapses to neighboring cells.</li>
+<li>Each cell has a private memory (comprised by a certain number of private CA channels) that is visible only to the cell itself. This represents some sort of internal functionality stored more permanently in a cell, that can be possibly transmitted or made available to other cells in a manner akin to RNA transfer (or other plausible molecular transfer mechanisms).</li>
+</ul>
+
+    <p>When CA cells update their state, their internal neural network (a homogeneous neural network with identical
+        weights for all cells) acts upon the visible channels in the neighborhood, in addition to the cell’s own private
+        memory. The result is the interplay of the visible component and the (private) memory stored within the cell.
+    </p>
+    <p>As such, the NCA has to learn to use its internal memory, since it is not directly accessible to other cells.
+        Therefore, it has to learn to produce a reverberation of it through its visible channels in order to carry out
+        the collective computation in coordination with the neighbors.
+    </p>
+
+    <p>This coordination is achieved by first training an NCA to grow from a seed cell to a set of primitive morphologies.
+        The only cell initially containing the genetic information (private memory) representing the target morphology is the seed cell itself.
+        Each morphology is encoded by a different private representation. Therefore, this NCA has to learn to achieve the global task only through its visible channels.
+        The neural network weights of this first NCA are then frozen and do not change. We name this first neural network GeneCA.
+    </p>
+
+    <p>Subsequently, another NCA is trained in addition to the previous, which does not manipulate and change the visible
+        information of cells, bun can only change their private genetic memory, i.e., a set of private channels. As such,
+        it has to learn a mechanism to regulate the private information such that the previously learned primitive morphologies
+        (or their combination) can be utilized and activated at the right time and in the right place. We name this second neural network GenePropCA.</p>
+
+    <p>The GenePropCA mechanism is an abstraction for mRNA transmission between cells, which provides a form of functionality transfer.
+        The transmitted functionality is stored in the cell’s internal memory and, in turn, affects the behavior of the GeneCA (the cell’s visible state). </p>
+
+    <p>Note that in biological systems, the two types of information transfer, i.e., synaptic transfer and mRNA transfer,
+        may happen at two different timescales. Typically, spikes through synapses are transmitted faster than mRNA transfers.
+        However, in our framework we have tested with different timescales (basically running the GeneCA faster than the GenePropCA,
+        or vice versa) without affecting the functionality. Overall, the system learns to adjust to more often updates from one of the two NCA to solve the task at hand.
+
+    </p>
+
+    <p>We test the proposed NCAs on different morphogenetic tasks, including the growth of simple yet stable primitives,
+        out-of-distribution mixtures of primitives, more complex morphologies obtained by the combination of basic primitives,
+        and moving primitives such as Lenia gliders. </p>
+
+
+
+
     <a class="marker" href="#section-2" id="section-2"></a>
     <h2>Model(s)</h2>
     <p>Description of both models, including illustrations of their architecture and how they interact.</p>
