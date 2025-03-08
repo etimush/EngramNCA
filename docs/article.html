@@ -56,28 +56,32 @@
 
     <a class="marker" href="#section-2" id="section-2"></a>
     <h2>Model(s)</h2>
-    <p>Description of both models, including illustrations of their architecture and how they interact.</p>
+    <p>In this section , we introduce the changes to the overall architecture changes from <d-cite  key="mordvintsev2020growing"></d-cite>,
+        and detail the implementation of the two new models (GeneCA snd GenePropCA, respectively), including illustrations of their specific architecture and
+        how they interact with each-other.
+    </p>
 
-    <p>Taking inspiration from RNA memory transfer in Planarians and Aplysia californica, we augment the NCA hidden state with a "private tape".
+    <p>Taking inspiration from RNA memory transfer observed Planarians and Aplysia, we augment the NCA hidden state with a "private tape".
     Instead of extending the classic NCA model by appending the tape to the hidden states, we choose to sacrifice hidden states by privatizing them, this ensures that any
-    improvements seen are not due to an increase in model size. The theory here is that the private tape augmentation can be exploited to encode different modalities of behaviour,
-    such as growing different shapes or representing different calculations.</p>
+    improvements seen are not due to an increase in model size (please see appendix for masking of hidden channels to investigate task deterioration with less available channels). The hypothesis here is that the private tape augmentation can be exploited to encode different modalities of behaviour,
+    such as growing different shapes or representing different computations. an illustration is provided in <a href="#figure-augment" class="figure-link" data-target="figure-augment"></a>, where the channels of the cell are represented, including the RGB
+    channels, the alpha channel, three additional channels, plus three gene channels (G1,G2, and G3) representing the private tape.
 
-    <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/gene.drawio.svg"; id="figure-augment"
-          style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>NCA augmentation through gene embedding channels.</figcaption>
-
+    <figure style="text-align: center; margin: 4rem 0;" id="figure-augment"><img playsinline src="figures/gene.drawio.svg";
+          style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>NCA augmentation through gene embedding channels, where the channels of the cell are represented, including the RGB channels, the alpha channel, three additional channels, plus three gene channels (G1,G2, and G3) representing the private tape.</figcaption>
+    <p><br></p>
     <p>We chose to encode different "primitives" in the tape through binary representation. These primitives can consist of simple shapes such as convex polygons or
-    more complex, convex, compound shapes such as body segments of a lizard emoji.</p>
-    <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/embedding.drawio.svg"; id="figure-embed"
-          style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption> Binary embedding of different primitives.</figcaption>
-
+    more complex, convex, compound shapes such as body segments of a lizard emoji. Examples of encodings are represented in <a href="#figure-embed" class="figure-link" data-target="figure-embed"></a>  and <a href="#figure-embedliz" class="figure-link" data-target="figure-embedliz"></a>, where three basic geometric morphologies and lizard parts are given, respectively.</p>
+    <figure style="text-align: center; margin: 4rem 0;" id="figure-embed" ><img playsinline src="figures/embedding.drawio.svg";
+          style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption> Binary embedding of geometric morphologies and their respective encoding.</figcaption>
+     <p><br></p>      
     <p>The tape length has to be chosen such that 2^gene_channels is greater or equal to the number of primitives. This ensures that there are enough
-    distinct binary encoding for each primitive. However, due to reasons that will be discussed later, it is often preferable to have a buffer of genes that are not used
+    distinct binary encodings for each primitive. However, due to reasons that will be discussed later, it is often preferable to have a buffer of genes that are not used
     in the binary encoding. There is a delicate balance between the number of gene bits and shared hidden channels that needs to be reached as privatisation of channels
-    ensures a performance penalty (see Appendix 1.). </p>
+    ensures a performance penalty (see Appendix 1 for details). </p>
 
     <figure style="text-align: center; margin: 2rem 0;" id="figure-embedliz"><img playsinline src="figures/LizEmbeddings.drawio.svg";
-          style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption> Binary embedding of different primitives.</figcaption>
+          style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption> Binary embedding of lizard body sections and their respective encodings. </figcaption>
 
 
 
@@ -85,10 +89,13 @@
     <h3>GeneCA</h3>
 
 
-    <p>The first model (<a href="#figure-div" class="figure-link" data-target="figure-div"></a>), which we choose to name GeneCA, is tasked with learning the primitive embedding. It takes
+    <p>The first model (<a href="#figure-div" class="figure-link" data-target="figure-div"></a>), which we  name GeneCA, is tasked with learning the primitive embedding. It takes
     inspiration form the original NCA <d-cite key="mordvintsev2020growing"></d-cite> and is extended to also include a laplacian convolution filter as found in <d-cite key="placeholder"></d-cite>. Notably,
         the parameters only produce a partial cell-state update-vector that comprises all non-gene channels. The gene channels are cloned and appended to the update vector after the stochastic
-    update step to prevent degradation over time. This leads to no change or propagation of gene channel information throughout the NCA cell.</p>
+    update step to prevent degradation over time. This leads to no change or propagation of gene channel information throughout the NCA cell. It is worth to note that, since the only
+        living cell that is initialized at the beginning of each run is a single seed cell, all cells besides the seed cell have no information in their gene channels (i.e., all zeros).
+        This means that the GeneCA learns to grow the primitive morphologies from a seed cell without relying on a mechanism to transmit the gene channel information to other cells.
+        Additionally, this signifies that cells do not practically observe the private tape of neighboring cells.</p>
 
       <figure style="text-align: center; margin: 2rem 0;" id="figure-div">
     <img playsinline src="figures/Gene.drawio.svg" style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" />
@@ -102,8 +109,8 @@
     <p>The GenePropCA model (<a href="#GeneProp" class="figure-link" data-target="GeneProp"></a>) is tasked with exploiting the gene embedding learned by the GeneCA.
     By conditioning the primitive growth in the GeneCA to specific embedding, these embeddings now carry latent information about the primitives. We assume that the latent information
     in each embedding can be modified to produce out-of-training behaviour, thus allowing the GenePropCA to both propagate and modify the genes to achieve a desired goal.
-    The architecture of the GenePropCA is similar to that of the GeneCA, where the neural network parameters produce a partial cell state update. In this case, only the genes are updated. Like in
-    the GeneCA, the un-updated cell states are cloned and appended after the asynchronous partial update, leading to the GenePropCA having no influence over non=gene channels. </p>
+    The architecture of the GenePropCA is similar to that of the GeneCA, where the neural network parameters produce a partial cell state update. In this case, only the genes channels are updated. Like in
+    the GeneCA, the unmodified cell states are cloned and appended after the asynchronous partial update, leading to the GenePropCA having no influence over non-gene channels. </p>
 
     <figure style="text-align: center; margin: 2rem 0;" id="GeneProp"><img playsinline src="figures/GeneProp1.drawio.svg"
       style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>One step of the GenePropCA</figcaption>
@@ -128,16 +135,16 @@
     <a class="marker" href="#section-3" id="section-3"></a>
     <h2>Hierarchical Growth Task --> I think this section should go before models</h2>
 
-    <p>The traditional NCAs presented in <d-cite key="mordvintsev2020growing">"</d-cite> and extended upon in <d-cite key="placeholder, placeholder"></d-cite> use the neural-network
+    <p>The traditional NCAs presented in <d-cite key="mordvintsev2020growing">"</d-cite> and extended upon in <d-cite key="placeholder, placeholder"></d-cite> uses the neural-network
     parameters to encode the desired behaviour. In effect, the neural-network can be seen as the genome for the morphology, where for each distinct morphology a new NCA needs to be trained.
-    Intern, this makes it particularly difficult to have coexisting morphologies, or even just coexisting dynamics, running on the same lattice, as the multiple NCAs end up interfering with each-other.</p>
+    This makes it particularly difficult to have coexisting morphologies, or even just coexisting dynamics, running on the same lattice, as the multiple NCAs end up interfering with each-other.</p>
 
     <p>Our model presents a possible solution to this problem ... <-- finish this paragraph</p>
 
     <a class="marker" href="#section-3.1" id="section-3.1"></a>
     <h3>Growing Coexisting Primitives</h3>
 
-    <p>The first step in the hierarchical growth task is to grow coexisting morphologies. In effect, this means to grow multiple distinct morphologies using the same set of NCA parameters. Much like te original growth task, the
+    <p>The first step in the hierarchical growth task is to grow coexisting morphologies. In effect, this means to grow multiple distinct morphologies using the same set of NCA parameters. Much like the original growth task as described in <d-cite key="mordvintsev2020growing">"</d-cite>, the
     multiple morphologies should be bounded and stable across time, with their shape unchanging once fully generated. </p>
 
     <a class="marker" href="#section-3.2" id="section-3.2"></a>
@@ -145,25 +152,26 @@
 
     <a class="marker" href="#section-4" id="section-4"></a>
     <h2>Training Procedure</h2>
-    <p>A description of the training procedure. Talk about two training phases, the special pooling method to train multiple DNA at once
+    <p>In this section we provide a  description of the training procedure,  including two distinct training phases, a special pooling method to train multiple primitives at one, and how the GeneCA weights are frozen when training the GenePropCA. Talk about two training phases, the special pooling method to train multiple DNA at once
     and how the GeneNCa Weights are frozen when training the GeneProp NCA</p>
 
     <a class="marker" href="#section-4.1" id="section-4.1"></a>
     <h3>GeneCA Training</h3>
     <p>GeneCA training is similar to the pool-training procedure presented in <d-cite key="mordvintsev2020growing"></d-cite>. However, to enable the gene encoding of multiple primitives,
     each gene-primitive pair is given its own pool to sample from and update. Additionally, the target image becomes a target batch consisting of n-repetitions of each image,
-    where n is a factor of the batch size. It is important to keep the batch size as a multiple of the number of primitives to avoid training bias towards one primitive.</p>
-    <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/Training.drawio.svg"
+    where n is a factor of the batch size. It is important to keep the batch size as a multiple of the number of primitives to avoid training bias towards one primitive. <a href="#multiTraining" class="figure-link" data-target="multiTraining"></a> illustrates the training procedure for batch-multi-image training under the GeneCA scheme.</p>
+
+    <figure style="text-align: center; margin: 2rem 0;" id="multiTraining"><img playsinline src="figures/Training.drawio.svg"
       style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Training loop for multi-image batch training</figcaption>
 
     <a class="marker" href="#section-4.2" id="section-4.2"></a>
     <h3>GenePropCA Training</h3>
-    <p>GenePropCA training uses the same batch training technique as the GeneCA, we usually only train a single morphology, however multiple morphologies can be trained by
+    <p>GenePropCA training uses the same batch training technique as the GeneCA. We typically only train a single morphology, however multiple morphologies can be trained by
     sacrificing more channels to act as "meta genes". These meta genes are unaffected by both the GeneCA and GenePropCA. During the training of the GenePropCA the GeneCA weights are frozen,
     though their gradient contribution during the growth process is still used when backpropagating the loss to the GenePropCA. This ensures the GenePropCA's dynamics are
-    conditioned on those of the GeneCA.</p>
-     <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/training_prop.drawio.svg"
-      style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Training loop for GenePropCA</figcaption>
+    conditioned on those of the GeneCA. <a href="#dualtraining" class="figure-link" data-target="dualtraining"></a></p> shoes the GenePropCA training with GeneCA frozen weights.
+     <figure style="text-align: center; margin: 2rem 0;" id="dualtraining"><img playsinline src="figures/training_prop.drawio.svg"
+      style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Training loop for GenePropCA. The GeneCA weights are frozen, yet still contribute to the gradient computations, making the GenePropCAs behaviour dependent on the GeneCA.</figcaption>
     <a class="marker" href="#section-5" id="section-5"></a>
     <h2>Results</h2>
     <p>The model was tested with different primitives, target images and configuration. Below are the results of those experiments. Generally, the NCA has a size of 30 x 30, there are 16 channels in total of which the first four are the alpha value and the three color channels. Of the remaining 12 hidden channels, eight channels were privatized, i.e. could be read but not be altered by the GeneCA. </p>
@@ -171,10 +179,10 @@
     <a class="marker" href="#section-5.1" id="section-5.1"></a>
     <h3>Growing Coexisting Primitives </h3>
 
-    <p>Three primitives were chosen as target shapes: A blue square, a green circle and a red triangle. Those primitives have a corresponding one-hot encoding in the private tape. The geneCA was trained to update the public channels of the CA such that the right primitive is formed around a cell with the corresponding encoding. It is important to note that there is no gene propagation at this point, only the update of the public channels that the geneCA calculates based on the available private and public channels. </p>
+    <p>Three primitives were chosen as target shapes: A blue square, a green circle and a red triangle. Those primitives have a corresponding one-hot encoding in the private tape. The GeneCA was trained to update the public channels of the CA such that the right primitive is formed around a cell with the corresponding encoding. It is important to note that there is no gene propagation at this point, only the update of the public channels that the GeneCA calculates based on the available private and public channels. </p>
     <p>During test time, cells of the CA are picked as seed cells, and their private tape is altered. </p>
 
-    <p><a href="#growing-prims" class="figure-link" data-target="growing-prims"></a> shows how the binary encoding of the three primitives is assigned to three different cells in the CA, with the distance between them being great enough to avoid interactions between cells belonging to different primitives. Starting from the seed cell, the shapes and their color form over a number of update steps. Afterwards, they remain stable. </p>
+    <p>In the top of <a href="#growing-prims" class="figure-link" data-target="growing-prims"></a> we show how the binary encodings of the three primitives are assigned to three different cells in the CA, with the distance between them being great enough to avoid interactions between cells belonging to different primitives. Starting from the seed cell, the shapes and their color form over a number of update steps. Afterwards, they remain stable. </p>
     <figure style="text-align: center; margin: 2rem 0;" id="growing-prims"><video loop autoplay playsinline muted width="640px"; src="figures/Primitives.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing simple primitives.</figcaption>
     <p> <a href="#individuality-demo" class="figure-link" data-target="individuality-demo"></a> shows what happens if seed cells are placed in such proximity to each other that the resulting primitives would normally overlap.
         As can be seen, the shapes remain largely distinct. Especially shapes of the same kind have neither overlap nor mixing and instead a border
@@ -188,7 +196,7 @@
         This essentially means that there is a mixture of genes. As can be seen in <a href="#primitive-mixing" class="figure-link" data-target="primitive-mixing"></a>, this leads to the growth of corresponding mixed forms. It can be seen that the shape of those forms is a
         distorted overlap of the primitives while the color ranges from the pure color of the primitives to the mix of the two colors. The primitives dominate the developing form in those areas where
         the other primitive is not growing, hence the combination of circle and square leads to most mixing. After a developmental period, the forms remain stable. This stability remains for any form of
-        encoding mixing and seems to be bound bythe maximum size of the primitives. </p>
+        encoding mixing and seems to be bound by the maximum size of the primitives. </p>
 
     <figure style="text-align: center; margin: 2rem 0;" id="primitive-mixing"><video loop autoplay playsinline muted width="640px"; src="figures/Mixed.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Untrained behaviour: out-of-training generative capabilities from mixing genes.</figcaption>
     <p>The experiments were repeated with body parts of the lizard image as primitives as can be seen in <a href="#body-part-prims" class="figure-link" data-target="body-part-prims"></a>. As those were more than three parts, the encoding is not one-hot anymore. As before, placing a seed cell with the corresponding encoding
@@ -205,22 +213,22 @@
     <a class="marker" href="#section-5.2" id="section-5.2"></a>
     <h3>Growing Morphologies from Primitives </h3>
 
-    <p>In the next step, the genepropCA was included. The attempt was to grow whole morphologies, while the geneCA weights where frozen on growing primitives.</p>
-    <p>In the lizard example, the genepropCA was trained as described above with the initial state being the seed for the torso primitive and the geneCA being trained
-        on parts of the whole lizard. As can be seen in <a href="#liz-from-parts" class="figure-link" data-target="liz-from-parts"></a>, the torso of the lizard is grown first, but the CA then continues to grow the limbs, tail and head. Deactivating
-        the genepropCA after the lizard is finished growing does not lead to a collapse, rather the lizard maintains its shape under the control of the geneCA. </p>
+    <p>As the next experimental step, the GenePropCA was included. The attempt was to grow whole morphologies, while the GeneCA weights where frozen on growing primitives.</p>
+    <p>In the lizard example, the GenePropCA was trained as described above with the initial containing the gene encoding for the torso primitive and the GeneCA being trained
+        on primitive body parts of the whole lizard (legs, head, torso, tail). As can be seen in <a href="#liz-from-parts" class="figure-link" data-target="liz-from-parts"></a>, the torso of the lizard is grown first, but the CA then continues to grow the limbs, tail and head. Deactivating
+        the GenePropCA after the lizard is finished growing does not lead to a collapse, rather the lizard maintains its shape under the control of the GeneCA. </p>
     <figure style="text-align: center; margin: 2rem 0;" id="liz-from-parts"><video loop autoplay playsinline muted width="640px"; src="figures/Growing_from_torso.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing the lizard morphology from the torso.</figcaption>
 
-    <p>The experiment was repeated, this time choosing the circle, square and triangle as primitives and the blue circle as the seed cell during the genepropCA training. This was successful, as can be seen
-        in <a href="#liz-from-shapes" class="figure-link" data-target="liz-from-shapes"></a>. Even if the geneCA is not trained on all primitives occurring in the final lizard or even on primitives not derived from the target image at all, the genepropCA
+    <p>The experiment was repeated, this time choosing the circle, square and triangle as primitives and the blue circle as the seed cell during the GenePropCA training. This was successful, as can be seen
+        in <a href="#liz-from-shapes" class="figure-link" data-target="liz-from-shapes"></a>. Even if the GeneCA is not trained on all primitives occurring in the final lizard or even on primitives not derived from the target image at all, the GenePropCA
         is able to generalize and facilitate gene propagation that leads to the growth of the lizard, albeit with less quality as in the case described above for <a href="#liz-from-parts" class="figure-link" data-target="liz-from-parts"></a>. <a href="#liz-diff-start" class="figure-link" data-target="liz-diff-start"></a>
-        shows that the choice of the seed cell does indeed matter, as the lizard will only grow successfully if the exact same seed as in the training of the genepropCA is used.  </p>
-    <p>Further experiments showed that different seeds, which were not used as primitives during the training of the geneCA, can be used to train the genepropCA to grow a lizard.  </p>
+        shows that the choice of the seed cell does indeed matter, as the lizard will only grow successfully if the exact same seed as in the training of the GenePropCA is used.  </p>
+    <p>Further experiments showed that different seeds, which were not used as primitives during the training of the GeneCA, can be used to train the GenePropCA to grow a lizard.  </p>
     <figure style="text-align: center; margin: 2rem 0;" id="liz-from-shapes"><video loop autoplay playsinline muted width="640px"; src="figures/GrowingLizardFast.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing the lizard from basic morphologies.</figcaption>
     <figure style="text-align: center; margin: 2rem 0;" id="liz-diff-start"><video loop autoplay playsinline muted width="640px"; src="figures/GrowingMorpho_multi.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>The lizard will not grow form other primitives.</figcaption>
 
-    <p><a href="#grow-frac" class="figure-link" data-target="grow-frac"></a> depicts an experiment in which the simple primitives of unicolor vertical and horizontal lines are combined into a fractal with satisfying performance. This shows that the model can combine simple and few primitives into more complex
-        form consisting of many primitives in addition to combining complex and many primitives into less complex forms consisting of few primitives, as was done before with the lizard. </p>
+    <p><a href="#grow-frac" class="figure-link" data-target="grow-frac"></a> depicts an experiment in which the simple primitives of unicolor vertical and horizontal lines are combined into a fractal-like shape with satisfying performance. This shows that the model can combine simple and few primitives into more complex
+        forms consisting of many primitives in addition to combining complex and many primitives into less complex forms consisting of few primitives, as was done before with the lizard. </p>
 
     <figure style="text-align: center; margin: 2rem 0;" id="grow-frac"><video loop autoplay playsinline muted width="640px"; src="figures/fract.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing a fractal</figcaption>
 
@@ -232,12 +240,12 @@
 
     <p>In contrast to the relatively simple task of growing morphologies, we wanted to test if the GenePropCA could exploit the embedding and learn the dynamics of
     a complex system. For this we chose to replicate the dynamics of a Lenia glider. Lenia itself is a form of continuous CA that can exhibit remarkable complexity.
-    We chose a glider (<a href="#originalLenia" class="figure-link" data-target="originalLenia"></a>)  whose dynamics where no trivial, where learning to replicate it
+    We chose a glider (<a href="#originalLenia" class="figure-link" data-target="originalLenia"></a>)  whose dynamics where non-trivial, where learning to replicate it
     would take more than simply memorising a simple pattern of motion. The GeneCA was trained on the first frame of the Lenia video. The GenePropCA was trained on a
     quasi curriculum style learning, where at certain checkpoints additional frames of the video are inserted into the training set. It is always trained from the first frame
     t0 the last frame of the training set in order, and loss was accumulated across all frames before backpropagation. The frame-by-frame loss accumulation is important here
     since, unlike growing morphologies, the time evolution of the NCA from state to state is important. As a comparison a standard NCA was trained using the same method, the parameter count
-    of the standard NCA was selected such that it equaled the sum of total parameters between the GeneCA and the GenePropCA.</p>
+    of the standard NCA was selected such that it corresponds to the sum of total parameters between the GeneCA and the GenePropCA.</p>
 
     <figure style="text-align: center; margin: 2rem 0;" id="originalLenia"><img playsinline src="figures/original_lenia.gif"
       style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Original Lenia video.</figcaption>
