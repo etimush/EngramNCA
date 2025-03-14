@@ -4,15 +4,15 @@
     <a class="marker" href="#section-1" id="section-1"></a>
     <h2>Introduction</h2>
 %% contents.html
-    <p>The currently most accepted theory of memory in biological and artificial brains is the synapses dogma, that is,
+    <p>The currently most accepted theory of memory in biological and artificial brains is the synapses dogma <d-cite  key="mayford2012synapses"></d-cite>, that is,
         the place where information is stored is at synapses.  Therefore, it is believed that the storage of memories
-        happens through changes in synaptic strengths. This view is challenged by emerging evidence that memory is also
-        present privately within cells, and synapses are merely a visible reverberation of such private memories.
+        happens through changes in synaptic strengths <d-cite  key="cajal1894fine"></d-cite>. This view is challenged by emerging evidence that memory is also
+        present privately within cells <d-cite  key="abraham2019plasticity"></d-cite>, and synapses are merely a visible reverberation of such private memories  <d-cite  key="gold2021central"></d-cite>.
         Compelling examples are the evidence of memory transfer via injection of RNA extracted from trained Aplysia into
-        untrained animals, the memory transfer via a soup of trained planaria fed to untrained organisms, and the decapitation
-        of planaria that retained long-term memories after head regeneration. </p>
+        untrained animals <d-cite  key="bedecarrats2018rna"></d-cite>, the memory transfer via a soup of trained planaria fed to untrained organisms <d-cite  key="mcconnell1967modern"></d-cite>, and the decapitation
+        of planaria that retained long-term memories after head regeneration <d-cite  key="shomrat2013automated"></d-cite>. </p>
 
-    <ul>In this work, we propose a Neural Cellular Automaton (NCA) model that allows for private memory storage within cells and molecular transfer across cells. We extend the NCA in two ways:
+    <ul>In this work, we propose a Neural Cellular Automaton (NCA) <d-cite  key="mordvintsev2020growing"></d-cite> model that allows for private memory storage within cells and molecular transfer across cells. We extend the NCA in two ways:
 <li>Each cell has a publicly visible state (comprised by a certain number of public CA channels) that can be accessed by neighboring cells and used as available information for computing cell state updates. This is akin to information transmitted through synapses to neighboring cells.</li>
 <li>Each cell has a private memory (comprised by a certain number of private CA channels) that is visible only to the cell itself. This represents some sort of internal functionality stored more permanently in a cell, that can be possibly transmitted or made available to other cells in a manner akin to RNA transfer (or other plausible molecular transfer mechanisms).</li>
 </ul>
@@ -257,15 +257,32 @@
       style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Our method trained to replicate the video.</figcaption>
 
     <a class="marker" href="#section-6" id="section-6"></a>
-    <h2>Related Work</h2>
+    <h2>Related NCA Work</h2>
+
+    <p>Neural cellular automata (NCAs) merge the classical framework of cellular automata with modern deep learning by replacing hand-crafted update rules with neural networks that are optimized via gradient-based methods. Early studies in cellular automata (e.g., <d-cite  key="Wolfram2002"></d-cite>) established that simple local rules can lead to complex emergent behavior. Building on these ideas, <d-cite  key="mordvintsev2020growing"></d-cite> introduced the “Growing Neural Cellular Automata” model, which trains a convolutional network with gradient-based learning to iteratively update a grid so that, starting from a single seed, complex images emerge and can regenerate after damage.</p>
+    <p>Seminal work by <d-cite  key="miller2004evolving"></d-cite> explored evolving self-repairing, self-regulating cellular automata to produce the “French flag” pattern, demonstrating how evolutionary algorithms can discover diverse rule sets for complex morphogenesis. <d-cite  key="nichele2017neat"></d-cite> extended morphogenetic CAs with neuro-evolution of neural networks as CA rules. <d-cite  key="pontescritical"></d-cite> showed a NCA evolved to criticality. This was further studied by Guichard (2024). <d-cite  key="kvalsund2024sensor"></d-cite> discussed NCA a model for a distributed neocortex. </p>
+
+    <p>A range of extensions have broadened the capabilities of NCAs.<d-cite  key="randazzo2020self"></d-cite> explored self-classification tasks. <d-cite  key="hernandez2021neural"></d-cite> presented NCA Manifold, creating embedding spaces of different morphogenetic processes. <d-cite  key="tesfaldet2022attention"></d-cite> developed an attention-based NCA that integrates self-attention mechanisms into the update process, allowing each cell to dynamically focus on relevant features in its local neighborhood and capture longer-range dependencies. <d-cite  key="grasso2022empowered"></d-cite> proposed Empowered Neural Cellular Automata, incorporating an information-theoretic objective (empowerment) to promote robust, coordinated behaviors. <d-cite  key="palm2022variational"></d-cite> proposed Variational Neural Cellular Automata, a probabilistic generative model that captures diverse emergent dynamics through variational inference. <d-cite  key="mordvintsev2022growing"></d-cite> proped an isotropic version of NCAs, while <d-cite  key="pande2023hierarchical"></d-cite> presented Hierarchical NCA to model emergent behaviors at different scales.</p>
+
+    <p>Extensions in application domains further illustrate the versatility of the NCA framework. <d-cite  key="variengien2021towards"></d-cite> applied NCAs to evolve controllers for a cart-pole system. <d-cite  key="horibe2022severe"></d-cite> demonstrated the use of NCAs for regenerating soft robot morphologies, showcasing their potential for self-repair akin to biological regeneration. <d-cite  key="najarro2022hypernca"></d-cite> studied a hypernetwork approach, named HyperNCA, that grows artificial neural networks with a developmental process. More recently, <d-cite  key="Reimers2023"></d-cite> introduced a pathfinding NCA with local self-attention, training automata to collectively explore environments and locate energy sources. <d-cite  key="randazzo2024simulating"></d-cite> exploted an NCA as evolvable plant biome. Very recently, Differentiable Logic Cellular Automata by <d-cite  key="Pietro-Miotti-Eyvind-Niklasson-Ettore-Randazzo-Alexander-Mordvintsev2025-jb"></d-cite> integrates differentiable logic gates with traditional neural cellular automata to achieve discrete, interpretable update rules while maintaining the benefits of gradient-based training.</p>
+
+    <p>One work that greatly inspired us is <d-cite  key="Pappadopoulos2023"></d-cite>, where the incorporation of additional channels to encode for different morphologies is discussed. More broadly, we were greatly inspired by <d-cite  key="MitchellCheney2024"></d-cite> and <d-cite  key="HartlLevin2024"></d-cite>, arguing that living systems encode robust, adaptable generative models that guide development and regeneration. Such works emphasize that biological lineages accumulate “memory engrams”—latent representations that enable organisms to reliably rebuild form and function despite perturbations. This concept is central in our idea of EngramNCA, where the model leverages dual-channel memory (public and private states) to simulate the distributed storage and transfer of memory observed in biological systems.
+
+</p>
+
 
     <a class="marker" href="#section-7" id="section-7"></a>
-    <h2>Discussion</h2>
-    <p>A discussion of the results, their significance  and meaning.</p>
+    <h2>Summary and Discussion</h2>
+    <p>The prevailing paradigm in neuroscience has long held that memory is predominantly stored and transmitted through synaptic plasticity—the so‐called “synaptic dogma” <d-cite  key="Kandel2001"></d-cite>. This view posits that modifications in synaptic strength are the primary means by which information is encoded in neural circuits. However, a growing body of experimental evidence suggests that memory storage may also involve intracellular processes and molecular mechanisms. For instance, studies in Aplysia have demonstrated that injection of RNA extracted from trained animals into naïve counterparts can induce memory‐like changes, implying that molecular substrates may contribute to memory formation beyond traditional synaptic modifications <d-cite  key="Bedecarrats2018"></d-cite>. Similarly, research on planaria has shown that decapitated individuals can retain learned behaviors after head regeneration, further suggesting that memory may reside in non‐synaptic, cellular compartments (<d-cite  key="McConnell1962"></d-cite>; <d-cite  key="Shomrat2013"></d-cite>).
 
-    <a class="marker" href="#section-8" id="section-8"></a>
-    <h2>Conclusion </h2>
-    <p>Conclusion to wrap up the paper summarising what was done and how the results are significant</p>
+
+These findings have significant implications for both biological and computational models of memory. Whereas classical models emphasize network-level interactions and synaptic weight adjustments, recent work has increasingly focused on the roles of gene expression and intracellular signaling cascades in long-term memory storage (<d-cite  key="Kandel2014"></d-cite>). Insights from developmental biology also support this broader perspective; gene regulatory networks, for example, orchestrate complex morphogenetic processes (<d-cite  key="Davidson2006"></d-cite>), underscoring the potential for multi-timescale information transfer that integrates fast synaptic signaling with slower, gene-mediated processes.</p>
+
+    <p>Inspired by these biological insights, emerging computational frameworks—such as the one proposed here and named EngramNCA—are exploring dual modes of information storage. In these models, the system is endowed with a bifurcated state representation: a publicly accessible channel that mirrors synaptic activity and a private channel that represents intracellular memory. This dual-channel approach reflects the biological separation between immediate synaptic signaling and slower molecular memory transfer, offering a more nuanced basis for capturing complex developmental and memory dynamics.
+
+In summary, while the synaptic model of memory has dominated for decades, converging evidence from RNA-mediated experiments in Aplysia and memory transfer studies in planaria underscores the importance of intracellular and molecular contributions to memory storage. Integrating these biological principles into computational models may ultimately pave the way for more robust and adaptable systems.</p>
+
+
 
 
 
