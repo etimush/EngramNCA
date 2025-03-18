@@ -139,17 +139,30 @@ class GenePropCA(torch.nn.Module):
         self.w2.weight.data.zero_()
         self.gene_size = gene_size
 
-    def forward(self, x, update_rate=0.5):
-        gene = x[:, -self.gene_size:, ...]
+    def forward(self, x, update_rate=0.5, is_dual = False):
+
+
+
+        if is_dual:
+            gene = x[:, x.shape[1] - self.gene_size -1:-1, ...]
+            final = x[:, -1:, ...]
+        else:
+            gene = x[:, x.shape[1] - self.gene_size:, ...]
         y = reduced_perception(x, 0)
         y = self.w2(torch.relu(self.w1(y)))
         b, c, h, w = y.shape
         update_mask = (torch.rand(b, 1, h, w, device="cuda:0") + update_rate).floor()
         xmp = torch.nn.functional.pad(x[:, None, 3, ...], pad=[1, 1, 1, 1], mode="circular")
         pre_life_mask = torch.nn.functional.max_pool2d(xmp, 3, 1, 0, ).cuda() > 0.1
+
         gene = gene + y  * update_mask* pre_life_mask
-        x = x[:, :x.shape[1] - self.gene_size, ...]
-        x = torch.cat((x, gene), dim=1)
+
+        if is_dual:
+            x = x[:, :x.shape[1] - self.gene_size -1, ...]
+            x = torch.cat((x, gene, final), dim=1)
+        else:
+            x = x[:, :x.shape[1] - self.gene_size, ...]
+            x = torch.cat((x, gene), dim=1)
         return x
 
 

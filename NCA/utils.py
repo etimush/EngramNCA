@@ -88,7 +88,7 @@ def gram_matrix(input):
 
 def get_image(path,height=50, width=50, padding =0):
     base = cv2.imread(path, cv2.IMREAD_UNCHANGED)
-    base = cv2.resize(base, (int(height), int(width)), interpolation=cv2.INTER_AREA)
+    base = cv2.resize(base, (int(height), int(width)), interpolation=cv2.INTER_LINEAR)
     base_2 = base / 255
     base_2[..., :3] *= base_2[..., 3:]
     base_torch = torch.tensor(base_2, dtype=torch.float32, requires_grad=True).permute((2, 0, 1)).cuda()
@@ -99,7 +99,7 @@ def get_image(path,height=50, width=50, padding =0):
 
 def get_reference_image_and_seed(path, height = 50, width =50, channels =16):
     base = cv2.imread(path, cv2.IMREAD_UNCHANGED)
-    base = cv2.resize(base, (int(height), int(width)), interpolation=cv2.INTER_AREA)
+    base = cv2.resize(base, (int(height), int(width)), interpolation=cv2.INTER_LINEAR)
     base_2 = base / 255
     base_2[..., :3] *= base_2[..., 3:]
     base_torch = torch.tensor(base_2, dtype=torch.float32, requires_grad=True).permute((2, 0, 1)).cuda()
