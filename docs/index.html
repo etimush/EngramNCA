@@ -80,9 +80,11 @@
   }</script>
   </d-front-matter>
   <d-title>
-    <figure style="grid-column: page; margin: 1rem 0;"><img src="figures/sample.gif"
+    <figure style="grid-column: page; margin: 1rem 0;"><video loop autoplay playsinline muted src="figures/banner.mp4"
         style="width:100%; border: 1px solid rgba(0, 0, 0, 0.2);" /></figure>
-    <p>Sample Text: Lizard growth from torso.</p>
+    <p><b>Left:</b> GeneCA trained to grow simple polygons through immutable gene encodings. These polygons are stable in time, exhibit individuality (strong morphological boundaries), and their genes can be combined to produce new out-of-training polygons.
+      <b>Center:</b> GenePropCA trained to grow a lizard morphology by exploiting the gene embeddings of the GeneCA (left). The GeneCA cannot modify its own gene embedding, and the GenePropCA cannot modify the visible channels, yet the GenePropCA can learn to exploit the GeneCA gene embeddings and force it to draw a target morphology.
+    <b>Right:</b> By adding immutable genes to the GenePropCA that neither it nor the GeneCA can modify, we can encode multiple target morphologies, where the GenePropCA can exploit the GeneCA genes to grow different morphologies.</p>
   </d-title>
   <d-byline></d-byline>
 
@@ -137,11 +139,12 @@
         present privately within cells <d-cite  key="abraham2019plasticity"></d-cite>, and synapses are merely a visible reverberation of such private memories  <d-cite  key="gold2021central"></d-cite>.
         Compelling examples are the evidence of memory transfer via injection of RNA extracted from trained Aplysia into
         untrained animals <d-cite  key="bedecarrats2018rna"></d-cite>, the memory transfer via a soup of trained planaria fed to untrained organisms <d-cite  key="mcconnell1967modern"></d-cite>, and the decapitation
-        of planaria that retained long-term memories after head regeneration <d-cite  key="shomrat2013automated"></d-cite>.
+        of planaria that retained long-term memories after head regeneration <d-cite  key="shomrat2013automated"></d-cite>.In this work, we propose a Neural Cellular Automaton (NCA) <d-cite  key="mordvintsev2020growing"></d-cite> model that allows for private memory storage within cells and molecular transfer across cells. We extend the NCA in two ways:
+
 
     </p>
 
-    <ul>In this work, we propose a Neural Cellular Automaton (NCA) <d-cite  key="mordvintsev2020growing"></d-cite> model that allows for private memory storage within cells and molecular transfer across cells. We extend the NCA in two ways:
+    <ul style="margin-top: 0">
 <li>Each cell has a publicly visible state (comprised by a certain number of public CA channels) that can be accessed by neighboring cells and used as available information for computing cell state updates. This is akin to information transmitted through synapses to neighboring cells.</li>
 <li>Each cell has a private memory (comprised by a certain number of private CA channels) that is visible only to the cell itself. This represents some sort of internal functionality stored more permanently in a cell, that can be possibly transmitted or made available to other cells in a manner akin to RNA transfer (or other plausible molecular transfer mechanisms).</li>
 </ul>
@@ -378,18 +381,20 @@
         is able to generalize and facilitate gene propagation that leads to the growth of the lizard, albeit with less quality as in the case described above for <a href="#liz-from-parts" class="figure-link" data-target="liz-from-parts"></a>. <a href="#liz-diff-start" class="figure-link" data-target="liz-diff-start"></a>
         shows that the choice of the seed cell does indeed matter, as the lizard will only grow successfully if the exact same seed as in the training of the GenePropCA is used.  </p>
     <p>Further experiments showed that different seeds, which were not used as primitives during the training of the GeneCA, can be used to train the GenePropCA to grow a lizard.  </p>
-    <figure style="text-align: center; margin: 2rem 0;" id="liz-from-shapes"><video loop autoplay playsinline muted width="640px"; src="figures/GrowingLizardFast.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing the lizard from basic morphologies.</figcaption>
-    <figure style="text-align: center; margin: 2rem 0;" id="liz-diff-start"><video loop autoplay playsinline muted width="640px"; src="figures/GrowingMorpho_multi.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>The lizard will not grow form other primitives.</figcaption>
+    <figure style="text-align: center; margin: 2rem 0;" id="liz-from-shapes"><video loop autoplay playsinline muted width="640px"; src="figures/GrowingLizardFast.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing the lizard from basic polygon morphologies.</figcaption>
+    <figure style="text-align: center; margin: 2rem 0;" id="liz-diff-start"><video loop autoplay playsinline muted width="640px"; src="figures/GrowingMorpho_multi.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing the lizard from basic polygon morphologies.The lizard will not grow from a primitive it was not trained to grow from.</figcaption>
     <p></p>
     <p><a href="#grow-frac" class="figure-link" data-target="grow-frac"></a> depicts an experiment in which the simple primitives of unicolor vertical and horizontal lines are combined into a fractal-like shape with satisfying performance. This shows that the model can combine simple and few primitives into more complex
         forms consisting of many primitives in addition to combining complex and many primitives into less complex forms consisting of few primitives, as was done before with the lizard. </p>
 
-    <figure style="text-align: center; margin: 2rem 0;" id="grow-frac"><video loop autoplay playsinline muted width="640px"; src="figures/fract.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing a fractal</figcaption>
+    <figure style="text-align: center; margin: 2rem 0;" id="grow-frac"><video loop autoplay playsinline muted width="640px"; src="figures/fract.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing a fractal-like shape from simple vertical and horizontal primitives.</figcaption>
 
     <a class="marker" href="#section-5.3" id="section-5.3"></a>
     <h3>Growing Coexisting Morphologies from Primitives </h3>
 
-      <figure style="text-align: center; margin: 2rem 0;" id="2-morph"><video loop autoplay playsinline muted width="640px"; src="figures/multi_morpho.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing both a lizard and a butterfly with the same GeneCA and GenePropCA </figcaption>
+    <p>The final experiment in growing morphologies was to test whether the GenePropCA could additionally grow multiple morphologies. This was done by adding an extra channel as a meta-gene, the neither the GeneCA nor GenePropCA could modify and training the GenePropCA to grow separate morphologies depending on the meta-gene encoding and the starting seed cell encoding.</p>
+    <p><a href="#2-morph" class="figure-link" data-target="2-morph"></a> shows the GenePropCA growing both a lizard morphology and a butterfly by exploiting the same GeneCA gene encodings. The overall quality of reproduction of the lizard has diminished, whilst the butterfly, a much simpler morphology, was reproduced better.</p>
+      <figure style="text-align: center; margin: 2rem 0;" id="2-morph"><video loop autoplay playsinline muted width="640px"; src="figures/multi_morpho.webm" style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);"/></figure><figcaption>Growing both a lizard and a butterfly with the same GeneCA and GenePropCA. The quality of reproduction is reduced.</figcaption>
 
     <a class="marker" href="#section-5.4" id="section-5.4"></a>
     <h3>Moving Primitives </h3>
