@@ -194,7 +194,7 @@
     <p>GenePropCA training uses the same batch training technique as the GeneCA. We typically only train a single morphology, however multiple morphologies can be trained by
     sacrificing more channels to act as "meta genes". These meta genes are unaffected by both the GeneCA and GenePropCA. During the training of the GenePropCA the GeneCA weights are frozen,
     though their gradient contribution during the growth process is still used when backpropagating the loss to the GenePropCA. This ensures the GenePropCA's dynamics are
-    conditioned on those of the GeneCA. <a href="#dualtraining" class="figure-link" data-target="dualtraining"></a></p> shoes the GenePropCA training with GeneCA frozen weights.
+        conditioned on those of the GeneCA. <a href="#dualtraining" class="figure-link" data-target="dualtraining"></a> shows the GenePropCA training with GeneCA frozen weights.</p>
      <figure style="text-align: center; margin: 2rem 0;" id="dualtraining"><img playsinline src="figures/training_prop.drawio.svg"
       style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Training loop for GenePropCA. The GeneCA weights are frozen, yet still contribute to the gradient computations, making the GenePropCAs behaviour dependent on the GeneCA.</figcaption>
     <a class="marker" href="#section-5" id="section-5"></a>
