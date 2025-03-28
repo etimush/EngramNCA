@@ -59,7 +59,7 @@
         "author":"Mikkel Lepperød",
         "authorURL":"https://lepmik.github.io/",
         "affiliations": [
-          {"name": "Simula Research Laboratory and University of Oslo", "url": "https://www.simula.no/"}
+          {"name": "Simula Research Laboratory, University of Oslo", "url": "https://www.simula.no/"}
         ]
       },
       {
@@ -104,6 +104,51 @@
 
 
 
+  </d-appendix>
+
+  <d-appendix>
+    <h3>Appendix 1</h3>
+    <p>This sections details the preliminary experiments conducted to determine the deterioration in NCA image reconstruction quality as channels are privatized. We measured the loss curves for reconstruction of a lizard emoji, alongside the regrowth capabilities of the NCA to damage. For all experiments the training was repeated once on a set seed for each privatization level, the regrowth experiments where repeated one-hundred times with the damage locations being fixed and identical for each privatization level.
+    </p>
+    <p>For these experiments we tested three different NCA types:</p>
+    <ul style="margin-top: 0">
+      <li><b>DummyVCA</b>: Where the sensing kernels channel dimension match the unmasked NCA channels. However, any kernel involved in sensing neighbourhoods (such as sobel filters) would receive a dummy vector of all zeros for in lieu of the privatized channels.</li>
+      <li><b>MaskedCA</b>: Where the sensing kernels channel dimension match the unmasked NCA channels. However, the channels of the output tensor corresponding to the privatized channels where masked with zeros after the sensing convolution.  </li>
+      <li><b>ReducedCA</b>: Where the sensing kernels channel dimension where reduced to not include the privatized channels, and a truncated state excluding the privatized channels is passed to the sensing kernels. The state was later re-expanded with zeros t mathc the unmasked NCA channel dimensions.</li>
+    </ul>
+
+
+    <p> The loss function used for training and measuring the reconstruction was the PixelwiseMSE:</p>
+
+    <d-math style="text-align: center; margin: 2rem 0;">
+
+      PixelWiseMSE = \frac{1}{H \times W \times C} \sum_{i=0}^{H} \sum_{j=0}^{W} \sum_{k=0}^{C} \left( I(i, j, k) - \hat{I}(i, j, k) \right)^2
+
+    </d-math>
+
+    <p>Where <d-math>H,W,C</d-math> are the dimension of the image, <d-math>I</d-math> is the reference image, and <d-math>\hat{I}</d-math> is the final state of the NCA.</p>
+
+    <h2>Preliminary experiment results</h2>
+
+    <p><a href="#figure-interComparison" class="figure-link" data-target="figure-interComparison"></a> shows the loss curves of the three models with different levels of privatization (0,4,8,12, left to right). For privatization levels 0 and 4 the three models are comparable, while at privatization level 8 the DummyVCA performed considerably worse.Finally, the ReducedCA performed best at privatization level 12. From privatization level 0 to 4 there seems to be no discernible change in the loss curves, afterward however, as more channels get privatized the models struggle to learn. </p>
+
+    <figure style="text-align: center; margin: 4rem 0;" id="figure-interComparison"><img playsinline src="figures/Inter_model_comparison.png";
+          style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Comparison of the loss curves of the three models with different levels of privatization (0,4,8,12, left to right). For privatization levels 0 and 4 the three models are comparable, while at privatization level 8 the DummyVCA performed considerably worse.Finally, the ReducedCA performed best at privatization level 12.</figcaption>
+    <p><br></p>
+    <p><a href="#figure-loss" class="figure-link" data-target="figure-loss"></a> shows how the reconstruction quality (the mean final loss, on a running average of 10) on the lizard emoji decreases as channels are privatized. The data is noisy, thus no proper comparison can be done between the three models, they can be considered to act the same. </p>
+
+    <figure style="text-align: center; margin: 4rem 0;" id="figure-loss"><img playsinline src="figures/Inter_model_loss_fine.png";
+          style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Mean final loss as compared to number of channels privatized for each of the three models. As channels are privatized, it can be seen that the reconstruction quality of the original image (mean final loss) decreases. </figcaption>
+
+    <p><br></p>
+    <p><a href="#figure-regrowth" class="figure-link" data-target="figure-regrowth"></a> shows the mean regrowth loss of the three models as they attempt to reconstruct the damaged lizard. As with the mean final loss, regrowth quality decreases as the number of channels are privatized. The data is once again noisy, even more so here. This is most likely due to the asynchronous nature of NCAs.  </p>
+
+
+    <figure style="text-align: center; margin: 4rem 0;" id="figure-regrowth"><img playsinline src="figures/Regrowth_loss.png";
+          style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Mean regrowth loss as compared to number of channels privatized for each of the three models. As channels are privatized, it can be seen that the NCA struggles to regrow back to the original image.</figcaption>
+
+    <p><br></p>
+    <p>From the results of the preliminary experiments, we concluded that there is indeed deterioration in the quality of image reconstruction from the NCA as channels are privatized. However, the choice of architecture does not play a big role in the level of performance loss. Thus, we chose to go with the MaskedCA version for channel reduction as it was the easiest to implement. </p>
   </d-appendix>
 
   <distill-appendix>

@@ -103,8 +103,8 @@ def get_reference_image_and_seed(path, height = 50, width =50, channels =16):
     base_2 = base / 255
     base_2[..., :3] *= base_2[..., 3:]
     base_torch = torch.tensor(base_2, dtype=torch.float32, requires_grad=True).permute((2, 0, 1)).cuda()
-    x_prime = torch.zeros((channels, height, width), dtype=torch.float32).cuda()
-    x_prime[:, int(height / 2), int(width / 2)] = 1.0
+    x_prime = torch.zeros((1,channels, height, width), dtype=torch.float32).cuda()
+    x_prime[:,:, int(height / 2), int(width / 2)] = 1.0
     return base_torch, x_prime
 
 def to_vue_image(tensor):
