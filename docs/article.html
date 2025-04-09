@@ -126,12 +126,12 @@
 
     
 
-    <p>The ensemble model uses the GeneCA and GenePropCA to produce the final morphology. The GeneCA works without the GenePropCA and will produce the primitives. The
+    <p>The ensemble model (<a href="#Enseble" class="figure-link" data-target="Enseble"></a>) uses the GeneCA and GenePropCA to produce the final morphology. The GeneCA works without the GenePropCA and will produce the primitives. The
     GenePropCA is dependent on the GeneCA as its parameters are trained to manipulate the GeneCA dynamics. At step N, the state of the CA is passed to the GeneCA, where it only modifies the visible and hidden channels
     to produce an intermediate state, the intermediate step is then passed to the GenePropCA, where only the gene encoding channels are modified to produce step N+1. The idea here is for the
     GenePropCA to learn to exploit the gene embedded dynamics of the GeneCA to produce more complex morphologies than that found in the GeneCA.</p>
 
-    <figure style="text-align: center; margin: 2rem 0;"><img playsinline src="figures/Enseble.drawio.svg"
+    <figure style="text-align: center; margin: 2rem 0;" id="Enseble"><img playsinline src="figures/Enseble.drawio.svg"
       style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>One step of the ensemble, GeneCA + GenePropCA</figcaption>
 
 
