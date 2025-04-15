@@ -7,14 +7,20 @@
     <p>The currently most accepted theory of memory in biological and artificial brains is the synapses dogma <d-cite  key="mayford2012synapses"></d-cite>, that is,
         the place where information is stored is at synapses.  Therefore, it is believed that the storage of memories
         happens through changes in synaptic strengths <d-cite  key="cajal1894fine"></d-cite>. This view is challenged by emerging evidence that memory is also
-        present privately within cells <d-cite  key="abraham2019plasticity"></d-cite>, and synapses are merely a visible reverberation of such private memories  <d-cite  key="gold2021central"></d-cite>.
-        Compelling examples are the evidence of memory transfer via injection of RNA extracted from trained Aplysia into
+        present privately within neural cells (and potentially other types of cells) <d-cite  key="abraham2019plasticity"></d-cite>, and synapses are merely a visible reverberation of such private memories  <d-cite  key="gold2021central"></d-cite>.
+        Compelling examples are the evidence of memory transfer via injection of RNA extracted from trained aplysia into
         untrained animals <d-cite  key="Bedecarrats2018"></d-cite>, the memory transfer via a soup of trained planaria fed to untrained organisms <d-cite  key="mcconnell1967modern"></d-cite>, and the decapitation
-        of planaria that retained long-term memories after head regeneration <d-cite  key="shomrat2013automated"></d-cite>.In this work, we propose a Neural Cellular Automaton (NCA) <d-cite  key="mordvintsev2020growing"></d-cite> model that allows for private memory storage within cells and memory transfer across cells. We extend the NCA in two ways:
-
-
+        of planaria that retained long-term memories after head regeneration <d-cite  key="shomrat2013automated"></d-cite>. Such findings suggest that RNA transfer between cells can influence cellular functions and behaviors,
+        including memory storage and transmission. Practically, cells can transfer RNA molecules to their surroundings via extracellular vesicles (membrane-bound particles)
+        that encapsulate RNA and other molecules, or by tunneling nanotubes that form a direct physical connection between cells.
     </p>
 
+    <p>In this work, we propose a Neural Cellular Automaton (NCA) <d-cite  key="mordvintsev2020growing"></d-cite> model that allows for private memory storage
+        within cells and memory transfer across cells.  By replicating such memory mechanisms, we might equally be able to enable richer intercellular communication
+        and more reliable generation of complex patterns, compared to classical NCAs that rely exclusively on publicly visible cell states. We name this new model
+        EngramNCA, with reference to \textit{engram} which in neuropsychology indicates the physical substrate of memory in biological organisms or, in other words,
+        the means by which memories are stored.  </p>
+    <p>We extend the NCA model in two ways:</p>
     <ul style="margin-top: 0">
 <li>Each cell has a publicly visible state (comprised by a certain number of public CA channels) that can be accessed by neighboring cells and used as available information for computing cell state updates. This is akin to information transmitted through synapses to neighboring cells.</li>
 <li>Each cell has a private memory (comprised by a certain number of private CA channels) that is visible only to the cell itself. This represents some sort of internal state stored more permanently in a cell, that can be possibly transmitted or made available to other cells in a manner akin to RNA transfer (or other plausible molecular transfer mechanisms).</li>
@@ -40,11 +46,11 @@
         it has to learn a mechanism to regulate the private information such that the previously learned primitive morphologies
         (or their combination) can be utilized and activated at the right time and in the right place. We name this second neural network GenePropCA, short for GenePropagationCA.</p>
 
-    <p>The GenePropCA mechanism is an abstraction for mRNA transmission between cells, which provides a form of functionality transfer.
+    <p>The GenePropCA mechanism is an abstraction for RNA molecular transmission between cells, which provides a form of functionality transfer.
         The transmitted functionality is stored in the cell’s internal memory and, in turn, affects the behavior of the GeneCA (the cell’s visible state). </p>
 
-    <p>Note that in biological systems, the two types of information transfer, i.e., synaptic transfer and mRNA transfer,
-        may happen at two different timescales. Typically, spikes through synapses are transmitted faster than mRNA transfers.
+    <p>Note that in biological systems, the two types of information transfer, i.e., synaptic transfer and RNA transfer,
+        may happen at two different timescales. Typically, spikes through synapses are transmitted faster than RNA transfers.
         However, in our framework we have tested with different timescales (basically running the GeneCA faster than the GenePropCA,
         or vice versa) without affecting the functionality. Overall, the system learns to adjust the rate of updates from one of the two NCA to solve the task at hand.
 
@@ -61,7 +67,7 @@
     <h2>Model(s)</h2>
     <p>In this section , we introduce the changes to the overall architecture from <d-cite  key="mordvintsev2020growing"></d-cite>,
         and detail the implementation of the two new models (GeneCA snd GenePropCA, respectively), including illustrations of their specific architecture and
-        how they interact with each-other.
+        how they interact with each other.
     </p>
 
     <p>Taking inspiration from RNA memory transfer observed Planarians and Aplysia, we augment the NCA hidden state with a "private tape".
@@ -122,11 +128,11 @@
 
 
     <a class="marker" href="#section-2.3" id="section-2.3"></a>
-    <h3>Ensemble</h3>
+    <h3>EngramNCA - An Ensemble Model</h3>
 
     
 
-    <p>The ensemble model (<a href="#Enseble" class="figure-link" data-target="Enseble"></a>) uses the GeneCA and GenePropCA to produce the final morphology. The GeneCA works without the GenePropCA and will produce the primitives. The
+    <p>The EngramNCA ensemble model (<a href="#Enseble" class="figure-link" data-target="Enseble"></a>) uses the GeneCA and GenePropCA to produce the final morphology. The GeneCA works without the GenePropCA and will produce the primitives. The
     GenePropCA is dependent on the GeneCA as its parameters are trained to manipulate the GeneCA dynamics. At step N, the state of the CA is passed to the GeneCA, where it only modifies the visible and hidden channels
     to produce an intermediate state, the intermediate step is then passed to the GenePropCA, where only the gene encoding channels are modified to produce step N+1. The idea here is for the
     GenePropCA to learn to exploit the gene embedded dynamics of the GeneCA to produce more complex morphologies than that found in the GeneCA.</p>
@@ -179,7 +185,7 @@
     <h2>Training Procedure</h2>
     <p>In this section we provide a  description of the training procedure,  including two distinct training phases, a special pooling method to train multiple primitives at one, and how the GeneCA weights are frozen when training the GenePropCA.</p>
 
-    <p> The loss function used for training on all the images is the Pixelwise-MSE:</p>
+    <p> The loss function used for training on all the images is the Pixelwise-MSE, as used in <d-cite key="mordvintsev2020growing"></d-cite>:</p>
 
     <d-math style="text-align: center; margin: 2rem 0;">
 
@@ -208,7 +214,7 @@
       style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Training loop for GenePropCA. The GeneCA weights are frozen, yet still contribute to the gradient computations, making the GenePropCAs behaviour dependent on the GeneCA.</figcaption>
     <a class="marker" href="#section-5" id="section-5"></a>
     <h2>Results</h2>
-    <p>The model was tested with configuration. Below are the results of those experiments. Generally, the NCA has a size of 30 x 30, there are 16 channels in total of which the first four are the alpha value and the three color channels. Of the remaining 12 hidden channels, eight channels were privatized, i.e. could be read but not be altered by the GeneCA. </p>
+    <p>The model was tested with different configurations, and below are the results for our experiments. Generally, the NCA has a size of 30 x 30, there are 16 channels in total of which the first four are the alpha value and the three color channels. Of the remaining 12 hidden channels, eight channels were privatized, i.e. could be read but not be altered by the GeneCA. </p>
 
     <a class="marker" href="#section-5.1" id="section-5.1"></a>
     <h3>Growing Coexisting Primitives </h3>
@@ -303,7 +309,10 @@
       style="width:60%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Our method trained to replicate the video.</figcaption>
 
     <a class="marker" href="#section-6" id="section-6"></a>
-    <h2>Related NCA Work</h2>
+    <h2>Related Work</h2>
+
+    <a class="marker" href="#section-6.1" id="section-6.1"></a>
+    <h3>On Neural Cellular Automata</h3>
 
     <p>Neural cellular automata (NCAs) merge the classical framework of cellular automata with modern deep learning by replacing hand-crafted update rules with neural networks that are optimized via gradient-based methods. Earlier studies in cellular automata (e.g., <d-cite  key="Wolfram2002"></d-cite>) established that simple local rules can lead to complex emergent behavior. Building on these ideas, <d-cite  key="mordvintsev2020growing"></d-cite> introduced the “Growing Neural Cellular Automata” model, which trains a convolutional network with gradient-based learning to iteratively update a grid so that, starting from a single seed, complex images emerge and can regenerate after damage.</p>
     <p>Seminal work by <d-cite  key="miller2004evolving"></d-cite> explored evolving self-repairing, self-regulating cellular automata to produce the “French flag” pattern, demonstrating how evolutionary algorithms can discover diverse rule sets for complex morphogenesis. <d-cite  key="nichele2017neat"></d-cite> extended morphogenetic CAs with neuro-evolution of neural networks as CA rules. <d-cite  key="pontescritical"></d-cite> showed a NCA evolved to criticality. This was further studied by <d-cite  key="Guichard2024"></d-cite>. <d-cite  key="kvalsund2024sensor"></d-cite> discussed NCA a model for a distributed neocortex. </p>
@@ -312,7 +321,11 @@
 
     <p>Extensions in application domains further illustrate the versatility of the NCA framework. <d-cite  key="variengien2021towards"></d-cite> applied NCAs to evolve controllers for a cart-pole system. <d-cite  key="horibe2022severe"></d-cite> demonstrated the use of NCAs for regenerating soft robot morphologies, showcasing their potential for self-repair akin to biological regeneration. <d-cite  key="najarro2022hypernca"></d-cite> studied a hypernetwork approach, named HyperNCA, that grows artificial neural networks with a developmental process. More recently, <d-cite  key="Reimers2023"></d-cite> introduced a pathfinding NCA with local self-attention, training automata to collectively explore environments and locate energy sources. <d-cite  key="randazzo2024simulating"></d-cite> exploited an NCA as an evolvable plant biome. Very recently, Differentiable Logic Cellular Automata by <d-cite  key="Pietro-Miotti-Eyvind-Niklasson-Ettore-Randazzo-Alexander-Mordvintsev2025-jb"></d-cite> integrates differentiable logic gates with traditional neural cellular automata to achieve discrete, interpretable update rules while maintaining the benefits of gradient-based training.</p>
 
-    <p>One work that greatly inspired us is <d-cite  key="Pappadopoulos2023"></d-cite>, where the incorporation of additional channels to encode for different morphologies is discussed. More broadly, we were greatly inspired by <d-cite  key="MitchellCheney2024"></d-cite> and <d-cite  key="HartlLevin2024"></d-cite>, arguing that living systems encode robust, adaptable generative models that guide development and regeneration. Such works emphasize that biological lineages accumulate “memory engrams”—latent representations that enable organisms to reliably rebuild form and function despite perturbations. This concept is central in our idea of EngramNCA, where the model leverages dual-channel memory (public and private states) to simulate the distributed storage and transfer of memory observed in biological systems.
+    <a class="marker" href="#section-6.2" id="section-6.2"></a>
+    <h3>Related to Memory Engrams</h3>
+
+
+    <p>One work that greatly inspired us is <d-cite  key="Pappadopoulos2023"></d-cite>, where the incorporation of additional channels to encode for different morphologies is discussed. Additionally, <d-cite  key="sudhakaran2022goal"></d-cite> proposes a goal-encoder which serves a similar function to our proposed GenePropCA, while <d-cite  key="bessonov2015model"></d-cite> shares a similar inspiration to our work and uses a cellular automaton as test-bench. Also, <d-cite  key="winge2023artificial"></d-cite> shares a rather similar inspiration, however they use neurons with cell memory and their execution is rather different. More broadly, we were greatly inspired by <d-cite  key="MitchellCheney2024"></d-cite> and <d-cite  key="HartlLevin2024"></d-cite>, arguing that living systems encode robust, adaptable generative models that guide development and regeneration. Such works emphasize that biological lineages accumulate “memory engrams”—latent representations that enable organisms to reliably rebuild form and function despite perturbations. This concept is central in our idea of EngramNCA, where the model leverages dual-channel memory (public and private states) to simulate the distributed storage and transfer of memory observed in biological systems.
 
 </p>
 
@@ -324,9 +337,11 @@
 
 These findings have significant implications for both biological and computational models of memory. Whereas classical models emphasize network-level interactions and synaptic weight adjustments, recent work has increasingly focused on the roles of gene expression and intracellular signaling cascades in long-term memory storage (<d-cite  key="Kandel2014"></d-cite>). Insights from developmental biology also support this broader perspective; gene regulatory networks, for example, orchestrate complex morphogenetic processes (<d-cite  key="Davidson2006"></d-cite>), underscoring the potential for multi-timescale information transfer that integrates fast synaptic signaling with slower, gene-mediated processes.</p>
 
-    <p>Inspired by these biological insights, emerging computational frameworks—such as the one proposed here and named EngramNCA—are exploring dual modes of information storage. In these models, the system is endowed with a bifurcated state representation: a publicly accessible channel that mirrors synaptic activity and a private channel that represents intracellular memory. This dual-channel approach reflects the biological separation between immediate synaptic signaling and slower molecular memory transfer, offering a more nuanced basis for capturing complex developmental and memory dynamics.
+    <p>Inspired by these biological insights, emerging computational frameworks—such as the one proposed here and named EngramNCA—are exploring dual modes of information storage. In these models, the system is endowed with a bifurcated state representation: a publicly accessible channel that mirrors synaptic activity and a private channel that represents intracellular memory. This dual-channel approach reflects the biological separation between immediate synaptic signaling and slower molecular memory transfer, offering a more nuanced basis for capturing complex developmental and memory dynamics. Integrating biological principles of memory into computational models may ultimately pave the way for more robust and adaptable systems.
 
-In summary, while the synaptic model of memory has dominated for decades, converging evidence from RNA-mediated experiments in Aplysia and memory transfer studies in planaria underscores the importance of intracellular and molecular contributions to memory storage. Integrating these biological principles into computational models may ultimately pave the way for more robust and adaptable systems.</p>
+</p>
+
+    <p> Our results suggest that having fixed memory portions in the cells makes for more stable expression of learned patterns. Moreover, our results show that the learned dynamic behavior of Lenia could be expressed more accurately using a private memory. This observation supports the proposed mechanism as a possible explanation for how memory could be stored in real bodies. More importantly, it also shows that cell memory could be a promising approach to having more stable distributed systems in AI. Stability is an open problem in AI, which is typically mitigated by pool-training. One avenue for future work is to use EngramNCA cell memory mechanisms when pool-training is not applicable. Additionally, we suggest that EngramNCA could suit more complex datasets such as the Abstraction and Reasoning Corpus (ARC) <d-cite  key="chollet2019measure"></d-cite>. </p>
 
 
 

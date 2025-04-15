@@ -90,7 +90,7 @@
 
   <d-article margib-bottom: 0>
 
-    <p style="color:#696969;font-size:13px;">Current version: draft v.0.1, Feb 2025 <br> *Corresponding author <a href="stefano.nichele@hiof.no" target="_blank">(stefano.nichele@hiof.no)</a> <br> Paper Repository: <a href="https://github.com/etimush/MemoryNCA" target="_blank">GitHub</a> <br>PDF Preprint: Will be added here <br> Published article: will be added here <br> Google Colab: <a target="_blank" href="https://colab.research.google.com/github/etimush/MemoryNCA/blob/main/GeneCA.ipynb">
+    <p style="color:#696969;font-size:13px;">Current version: draft v.0.1, Feb 2025 <br> *Corresponding author <a href="stefano.nichele@hiof.no" target="_blank">(stefano.nichele@hiof.no)</a> <br> Paper Repository: <a href="https://github.com/etimush/EngramNCA" target="_blank">GitHub</a> <br>PDF Preprint: Will be added here <br> Published article: will be added here <br> Google Colab: <a target="_blank" href="https://colab.research.google.com/github/etimush/EngramNCA/blob/main/EngramNCA.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a></p>
 
@@ -130,10 +130,10 @@
 
     <h2>Preliminary experiment results</h2>
 
-    <p><a href="#figure-interComparison" class="figure-link" data-target="figure-interComparison"></a> shows the loss curves of the three models with different levels of privatization (0,4,8,12, left to right). For privatization levels 0 and 4 the three models are comparable, while at privatization level 8 the DummyVCA performed considerably worse.Finally, the ReducedCA performed best at privatization level 12. From privatization level 0 to 4 there seems to be no discernible change in the loss curves, afterward however, as more channels get privatized the models struggle to learn. </p>
+    <p><a href="#figure-interComparison" class="figure-link" data-target="figure-interComparison"></a> shows the loss curves of the three models (left to right) with different levels of privatization (0,4,8,12, top to bottom). For privatization levels 0 and 4 the three models are comparable, while at privatization level 8 the DummyVCA performed considerably worse.Finally, the ReducedCA performed best at privatization level 12. From privatization level 0 to 4 there seems to be no discernible change in the loss curves, afterward however, as more channels get privatized the models struggle to learn. </p>
 
     <figure style="text-align: center; margin: 4rem 0;" id="figure-interComparison"><img playsinline src="figures/Inter_model_comparison.png";
-          style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Comparison of the loss curves of the three models with different levels of privatization (0,4,8,12, left to right). For privatization levels 0 and 4 the three models are comparable, while at privatization level 8 the DummyVCA performed considerably worse.Finally, the ReducedCA performed best at privatization level 12.</figcaption>
+          style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>Comparison of the loss curves of the three models (left to right) with different levels of privatization (0,4,8,12, top to bottom). For privatization levels 0 and 4 the three models are comparable, while at privatization level 8 the DummyVCA performed considerably worse.Finally, the ReducedCA performed best at privatization level 12.</figcaption>
     <p><br></p>
     <p><a href="#figure-loss" class="figure-link" data-target="figure-loss"></a> shows how the reconstruction quality (the mean final loss, on a running average of 10) on the lizard emoji decreases as channels are privatized. The data is noisy, thus no proper comparison can be done between the three models, they can be considered to act the same. </p>
 
@@ -149,6 +149,12 @@
 
     <p><br></p>
     <p>From the results of the preliminary experiments, we concluded that there is indeed deterioration in the quality of image reconstruction from the NCA as channels are privatized. However, the choice of architecture does not play a big role in the level of performance loss. Thus, we chose to go with the MaskedCA version for channel reduction as it was the easiest to implement. </p>
+  </d-appendix>
+
+  <d-appendix>
+<h3>Acknowledgement</h3>
+  <p>This work was partially supported by The Digital Society
+strategic initiative at Øsftold University College.</p>
   </d-appendix>
 
   <distill-appendix>
