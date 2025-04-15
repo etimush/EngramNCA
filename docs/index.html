@@ -151,7 +151,7 @@
     <p>In this work, we propose a Neural Cellular Automaton (NCA) <d-cite  key="mordvintsev2020growing"></d-cite> model that allows for private memory storage
         within cells and memory transfer across cells.  By replicating such memory mechanisms, we might equally be able to enable richer intercellular communication
         and more reliable generation of complex patterns, compared to classical NCAs that rely exclusively on publicly visible cell states. We name this new model
-        EngramNCA, with reference to \textit{engram} which in neuropsychology indicates the physical substrate of memory in biological organisms or, in other words,
+        EngramNCA, with reference to <i>engram</i> which in neuropsychology indicates the physical substrate of memory in biological organisms or, in other words,
         the means by which memories are stored.  </p>
     <p>We extend the NCA model in two ways:</p>
     <ul style="margin-top: 0">
@@ -199,7 +199,7 @@
     <a class="marker" href="#section-2" id="section-2"></a>
     <h2>Model(s)</h2>
     <p>In this section , we introduce the changes to the overall architecture from <d-cite  key="mordvintsev2020growing"></d-cite>,
-        and detail the implementation of the two new models (GeneCA snd GenePropCA, respectively), including illustrations of their specific architecture and
+        and detail the implementation of the two new models (GeneCA snd GenePropCA, respectively), that form the backbone of the EngramNCA model, including illustrations of their specific architecture and
         how they interact with each other.
     </p>
 
@@ -250,7 +250,7 @@
 
     <p>The GenePropCA model (<a href="#GeneProp" class="figure-link" data-target="GeneProp"></a>) is tasked with exploiting the gene embedding learned by the GeneCA.
     By conditioning the primitive growth in the GeneCA to a specific embedding, these embeddings now carry latent information about the primitives. We assume that the latent information
-    in each embedding can be modified to produce out-of-training behaviour, thus allowing the GenePropCA to both propagate and modify the genes to achieve a desired goal.
+    in each embedding can be modified to produce out-of-distribution behaviour, thus allowing the GenePropCA to both propagate and modify the genes to achieve a desired goal.
     The architecture of the GenePropCA is similar to that of the GeneCA, where the neural network parameters produce a partial cell state update. In this case, only the genes channels are updated. Like in
     the GeneCA, the unmodified cell states are cloned and appended after the asynchronous partial update, leading to the GenePropCA having no influence over non-gene channels. </p>
 
@@ -269,6 +269,7 @@
     GenePropCA is dependent on the GeneCA as its parameters are trained to manipulate the GeneCA dynamics. At step N, the state of the CA is passed to the GeneCA, where it only modifies the visible and hidden channels
     to produce an intermediate state, the intermediate step is then passed to the GenePropCA, where only the gene encoding channels are modified to produce step N+1. The idea here is for the
     GenePropCA to learn to exploit the gene embedded dynamics of the GeneCA to produce more complex morphologies than that found in the GeneCA.</p>
+    <p>For a formal mathematical definition of the proposed models, including GeneCA, GenePropCA and the ensemble model EngramNCA, together with the training procedure, please refer to the relative section in Appendix 2)</p>
 
     <figure style="text-align: center; margin: 2rem 0;" id="Enseble"><img playsinline src="figures/Enseble.drawio.svg"
       style="width:100%; border: 0px solid rgba(0, 0, 0, 0.2);" /></figure><figcaption>One step of the ensemble, GeneCA + GenePropCA</figcaption>
@@ -279,10 +280,10 @@
 
     <p>The traditional NCAs presented in <d-cite key="mordvintsev2020growing">"</d-cite>  uses the neural-network
     parameters to encode the desired behaviour. In effect, the neural-network can be seen as the genome for the morphology, where for each distinct morphology a new NCA needs to be trained.
-    This makes it particularly difficult to have coexisting morphologies, or even just coexisting dynamics, existing on the same lattice, as the multiple NCAs end up interfering with each-other.</p>
+    This makes it particularly difficult to have coexisting morphologies, or even just coexisting dynamics, existing on the same lattice, as the multiple NCAs end up interfering with each other.</p>
 
-    <p>Our model presents a possible solution to this problem by tying the morphological result to an unchanging seed cell. In this way, we hope that
-    the NCA learns general growing dynamics that are necessary for any morphology, alongside encoding-specific dynamics for the details of the morphology.  </p>
+    <p>Our model presents a possible solution to this problem by tying the morphological result to an unchanging seed cell. In this way, we hypothesize that
+    the NCA learns general growing dynamics necessary for any morphology, alongside encoding-specific dynamics for the details of the morphology.  </p>
 
     <a class="marker" href="#section-3.1" id="section-3.1"></a>
     <h3>Growing Coexisting Primitives</h3>
@@ -476,7 +477,7 @@ These findings have significant implications for both biological and computation
 
     <p> Our results suggest that having fixed memory portions in the cells makes for more stable expression of learned patterns. Moreover, our results show that the learned dynamic behavior of Lenia could be expressed more accurately using a private memory. This observation supports the proposed mechanism as a possible explanation for how memory could be stored in real bodies. More importantly, it also shows that cell memory could be a promising approach to having more stable distributed systems in AI. Stability is an open problem in AI, which is typically mitigated by pool-training. One avenue for future work is to use EngramNCA cell memory mechanisms when pool-training is not applicable. Additionally, we suggest that EngramNCA could suit more complex datasets such as the Abstraction and Reasoning Corpus (ARC) <d-cite  key="chollet2019measure"></d-cite>. </p>
 
-
+    <p>Further, the EngramNCA model could provide valuable insights for neuroscience by offering a computational framework that aligns with emerging biological evidence of memory mechanisms beyond the traditional synaptic dogma. By demonstrating how systems with both publicly visible states and private internal memory can develop more stable patterns, hierarchical organization, and robust information transfer, this model suggests potential mechanisms for biological phenomena like memory retention after tissue regeneration or RNA-mediated memory transfer. Specifically, the model illustrates how intracellular memory components might work alongside synaptic connections to create more resilient and multifaceted memory systems—potentially explaining why planaria can maintain memories after decapitation or why RNA transfer can induce learned behaviors. This computational approach could guide future experimental design in neuroscience by predicting how cellular-level memory mechanisms might interact across different timescales and spatial organizations, ultimately leading to a more nuanced understanding of memory encoding, storage, and retrieval in biological systems.</p>
 
 
 
@@ -537,6 +538,74 @@ These findings have significant implications for both biological and computation
     <p><br></p>
     <p>From the results of the preliminary experiments, we concluded that there is indeed deterioration in the quality of image reconstruction from the NCA as channels are privatized. However, the choice of architecture does not play a big role in the level of performance loss. Thus, we chose to go with the MaskedCA version for channel reduction as it was the easiest to implement. </p>
   </d-appendix>
+
+  <d-appendix>
+  <h3>Appendix 2</h3>
+    <h1>Mathematical details of the proposed models</h1>
+    <p>In this section we define the proposed models with mathematical detail.</p>
+    <h2>Cellular automaton framework</h2>
+    <p>We formalize our EngramNCA as a grid of cells <d-math>C \in \mathbb{R}^{H \times W \times N}</d-math>, where <d-math>H</d-math> and <d-math>W</d-math> are the grid dimensions, and <d-math>N</d-math> is the total number of channels. Each cell <d-math>c_{i,j}</d-math> at position <d-math>(i,j)</d-math> contains a state vector that is partitioned into three components:
+</p>
+<d-math>c_{i,j} = [v_{i,j}, h_{i,j}, g_{i,j}]</d-math>
+    <p><br></p>
+<p>
+where <d-math>v_{i,j} \in \mathbb{R}^4</d-math> represents the visible RGB-<d-math>\alpha</d-math> channels, <d-math>h_{i,j} \in \mathbb{R}^{n_h}</d-math> represents the public hidden channels, and <d-math>g_{i,j} \in \mathbb{R}^{n_g}</d-math> represents the private gene channels. The dimensions satisfy <d-math>4 + n_h + n_g = N</d-math>.</p>
+
+
+  <h2>GeneCA architecture</h2>
+
+  <p>GeneCA updates the public channels (visible and hidden) while preserving the private gene channels. For each cell <d-math>c_{i,j}</d-math>, the update rule is defined as:</p>
+  <d-math style="text-align: center; margin: 2rem 0;">[v_{i,j}^{t+1}, h_{i,j}^{t+1}] = [v_{i,j}^t, h_{i,j}^t] + \phi_\text{GeneCA}(\mathcal{P}(c_{i,j}^t), g_{i,j}^t)</d-math>
+  <d-math style="text-align: center; margin: 2rem 0;">g_{i,j}^{t+1} = g_{i,j}^t</d-math>
+
+  <p>where <d-math>\mathcal{P}(c_{i,j}^t)</d-math> represents the perception vector derived from the cell's neighborhood, and <d-math>\phi_\text{GeneCA}</d-math> is a neural network that computes the update. The perception function <d-math>\mathcal{P}</d-math> applies convolution kernels to the grid:</p>
+
+  <d-math style="text-align: center; margin: 2rem 0;">\mathcal{P}(c_{i,j}^t) = [\text{Identity}(c_{i,j}^t), \text{Sobel}_x(c_{i,j}^t), \text{Sobel}_y(c_{i,j}^t), \text{Laplacian}(c_{i,j}^t)]</d-math>
+
+  <p>where Identity, Sobel<d-math>_x</d-math>, Sobel<d-math>_y</d-math>, and Laplacian are convolution filters applied only to the visible and hidden channels. The neural network <d-math>\phi_\text{GeneCA}</d-math> is structured as:</p>
+
+  <d-math style="text-align: center; margin: 2rem 0;">\phi_\text{GeneCA}(\mathcal{P}, g) = (W_2 \cdot \text{ReLU}(W_1 \cdot [\mathcal{P}, g] + b_1)) \cdot u_m \cdot l_m</d-math>
+
+ <p>where <d-math>W_1, W_2, b_1</d-math> are learnable parameters and <d-math>u_m, l_m</d-math> are the asynchronous update mask and cell living mask respectively. </p>
+
+  <h2>GenePropCA architecture</h2>
+
+  <p>The GenePropCA updates only the gene channels while preserving the public channels:</p>
+
+  <d-math style="text-align: center; margin: 2rem 0;">[v_{i,j}^{t+1}, h_{i,j}^{t+1}] = [v_{i,j}^t, h_{i,j}^t]</d-math>
+  <d-math style="text-align: center; margin: 2rem 0;">g_{i,j}^{t+1} = g_{i,j}^t + \psi_\text{GenePropCA}(\mathcal{P}(c_{i,j}^t), g_{i,j}^t)</d-math>
+
+  <p>where <d-math>\psi_\text{GenePropCA}</d-math> is a neural network with a similar architecture to <d-math>\phi_\text{GeneCA}</d-math> but outputs updates for gene channels only:</p>
+
+  <d-math style="text-align: center; margin: 2rem 0;">\psi_\text{GenePropCA}(\mathcal{P}, g) = (V_2 \cdot \text{ReLU}(V_1 \cdot [\mathcal{P}, g] + d_1)) \cdot u_m \cdot l_m</d-math>
+
+  <p>where <d-math>V_1, V_2, d_1</d-math> are learnable parameters and <d-math>u_m, l_m</d-math> are the asynchronous update mask and cell living mask respectively.</p>
+
+  <h2>EngramNCA ensemble</h2>
+
+  <p>The EngramNCA ensemble combines both models in sequence. For a single update step:</p>
+
+  <d-math style="text-align: center; margin: 2rem 0;">c_{i,j}^{t+\frac{1}{2}} = [v_{i,j}^t + \Delta v_{i,j}^t, h_{i,j}^t + \Delta h_{i,j}^t, g_{i,j}^t]</d-math>
+
+  <p>where <d-math>[\Delta v_{i,j}^t, \Delta h_{i,j}^t] = \phi_\text{GeneCA}(\mathcal{P}(c_{i,j}^t), g_{i,j}^t)</d-math>, followed by:</p>
+
+  <d-math style="text-align: center; margin: 2rem 0;">c_{i,j}^{t+1} = [v_{i,j}^{t+\frac{1}{2}}, h_{i,j}^{t+\frac{1}{2}}, g_{i,j}^t + \Delta g_{i,j}^t]</d-math>
+
+  <p>where <d-math>\Delta g_{i,j}^t = \psi_\text{GenePropCA}(\mathcal{P}(c_{i,j}^{t+\frac{1}{2}}), g_{i,j}^t)</d-math>.</p>
+
+  <h2>Training procedure</h2>
+
+  <p>The GeneCA is trained first with frozen gene channels. For each training iteration, we:</p>
+
+  <p>1. Sample a batch of <d-math>B</d-math> cells from pools corresponding to <d-math>K</d-math> different primitive morphologies
+2. Initialize the gene channels of each seed cell with a unique binary encoding <d-math>E_k \in \{0,1\}^{n_g}</d-math> for primitive <d-math>k</d-math>
+3. Run the GeneCA for <d-math>T</d-math> steps to grow the morphologies
+4. Compute the loss using pixelwise MSE between the final visible channels and target images:</p>
+
+  <d-math style="text-align: center; margin: 2rem 0;">\mathcal{L}_\text{GeneCA} = \frac{1}{BHW} \sum_{b=1}^B \sum_{i=1}^H \sum_{j=1}^W ||v_{i,j}^T - \hat{v}_{i,j}||_2^2</d-math>
+
+  <p>After training GeneCA, its weights are frozen, and GenePropCA is trained to propagate and modify gene information to grow complex morphologies. The same loss function is used, but with target images representing complete morphologies rather than primitives.</p>
+</d-appendix>
 
   <d-appendix>
 <h3>Acknowledgement</h3>
